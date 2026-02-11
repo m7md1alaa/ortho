@@ -5,12 +5,12 @@ import {
   CheckCircle,
   Keyboard,
   RotateCcw,
-  SkipForward,
   Trophy,
   Volume2,
   XCircle,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { Button } from "@/components/ui/button";
 import {
   endPracticeSession,
@@ -37,6 +37,10 @@ function PracticePage() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [sessionComplete, setSessionComplete] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState<{
+    text: string;
+    type: "success" | "error" | "neutral";
+  } | null>(null);
   const [results, setResults] = useState<{
     correct: number;
     incorrect: number;
@@ -49,17 +53,23 @@ function PracticePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [practiceWords, setPracticeWords] = useState(list?.words || []);
 
+  // Get current word
+  const currentWord = practiceWords[currentWordIndex];
+  const progress = currentWord
+    ? ((currentWordIndex + 1) / practiceWords.length) * 100
+    : 0;
+
   useEffect(() => {
     if (list && !currentSession) {
       startPracticeSession(listId);
       const words = [...list.words].sort(() => Math.random() - 0.5);
       setPracticeWords(words);
     }
-  }, [list, listId, currentSession]);
+  }, [list, listId]);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [currentWordIndex, sessionComplete]);
+  }, [currentWordIndex]);
 
   const speakWord = useCallback(
     (word: string) => {
@@ -75,51 +85,152 @@ function PracticePage() {
   );
 
   useEffect(() => {
-    if (practiceWords[currentWordIndex] && !sessionComplete) {
+    if (currentWord) {
       const timer = setTimeout(() => {
-        speakWord(practiceWords[currentWordIndex].word);
+        speakWord(currentWord.word);
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [currentWordIndex, practiceWords, sessionComplete, speakWord]);
+  }, [currentWord, speakWord]);
 
+  // Define all callbacks before the keyboard useEffect
+  const handleSubmit = useCallback(() => {
+    if (!currentWord || !userInput.trim()) return;
+
+    const isCorrect =
+      userInput.trim().toLowerCase() === currentWord.word.toLowerCase();
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
+
+    if (isCorrect) {
+      recordWordPractice(currentWord.id, true, newAttempts, 0);
+      setResults((prev) => ({ ...prev, correct: prev.correct + 1 }));
+      setShowAnswer(true);
+      setFeedbackMessage({ text: "Good", type: "success" });
+    } else {
+      // Don't show answer, just give feedback to try again
+      setFeedbackMessage({ text: "Try again", type: "neutral" });
+      setUserInput(""); // Clear input so they can try again
+      inputRef.current?.focus();
+    }
+  }, [currentWord, userInput, attempts]);
+
+  const handleShowAnswer = useCallback(() => {
+    if (!currentWord) return;
+    recordWordPractice(currentWord.id, false, attempts, 0);
+    setResults((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+    setShowAnswer(true);
+    setFeedbackMessage({ text: "Not quite", type: "error" });
+  }, [currentWord, attempts]);
+
+  const goToNextWord = useCallback(() => {
+    if (currentWordIndex >= practiceWords.length - 1) {
+      endPracticeSession();
+      setSessionComplete(true);
+    } else {
+      setCurrentWordIndex(currentWordIndex + 1);
+      setUserInput("");
+      setShowAnswer(false);
+      setAttempts(0);
+      setFeedbackMessage(null);
+    }
+  }, [currentWordIndex, practiceWords.length]);
+
+  const goToPreviousWord = useCallback(() => {
+    if (currentWordIndex > 0) {
+      setCurrentWordIndex(currentWordIndex - 1);
+      setUserInput("");
+      setShowAnswer(false);
+      setAttempts(0);
+      setFeedbackMessage(null);
+    }
+  }, [currentWordIndex]);
+
+  // Auto-advance when answer is correct (show green border briefly)
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (sessionComplete) return;
+    if (
+      showAnswer &&
+      currentWord &&
+      userInput.toLowerCase() === currentWord.word.toLowerCase()
+    ) {
+      const timer = setTimeout(() => {
+        goToNextWord();
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [showAnswer, currentWord, userInput, goToNextWord]);
 
-      if (e.key === "ArrowLeft" && currentWordIndex > 0) {
+  // Keyboard shortcuts using react-hotkeys-hook
+  useHotkeys(
+    "left",
+    (e) => {
+      if (!sessionComplete && currentWordIndex > 0) {
         e.preventDefault();
         goToPreviousWord();
-      } else if (e.key === "ArrowRight") {
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, currentWordIndex, goToPreviousWord],
+  );
+
+  useHotkeys(
+    "right",
+    (e) => {
+      if (!sessionComplete) {
         e.preventDefault();
         if (showAnswer) {
           goToNextWord();
         } else {
-          handleSkip();
+          handleShowAnswer();
         }
-      } else if (e.key === " " && e.ctrlKey) {
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, showAnswer, goToNextWord, handleShowAnswer],
+  );
+
+  useHotkeys(
+    "ctrl+space",
+    (e) => {
+      if (!sessionComplete && currentWord) {
         e.preventDefault();
-        if (practiceWords[currentWordIndex]) {
-          speakWord(practiceWords[currentWordIndex].word);
-        }
-      } else if (e.key === "Enter") {
+        speakWord(currentWord.word);
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, currentWord, speakWord],
+  );
+
+  useHotkeys(
+    "enter",
+    (e) => {
+      if (!sessionComplete) {
         e.preventDefault();
         if (showAnswer) {
           goToNextWord();
         } else {
           handleSubmit();
         }
-      } else if (e.key === "Escape") {
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, showAnswer, goToNextWord, handleSubmit],
+  );
+
+  useHotkeys(
+    "esc",
+    (e) => {
+      if (!sessionComplete) {
         e.preventDefault();
         setShowAnswer(false);
         setUserInput("");
+        setFeedbackMessage(null);
         inputRef.current?.focus();
       }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentWordIndex, showAnswer, userInput, practiceWords, sessionComplete]);
+    },
+    { enableOnFormTags: true },
+    [sessionComplete],
+  );
 
   if (!list) {
     return (
@@ -175,58 +286,6 @@ function PracticePage() {
         }}
       />
     );
-  }
-
-  const currentWord = practiceWords[currentWordIndex];
-  const progress = ((currentWordIndex + 1) / practiceWords.length) * 100;
-
-  function handleSubmit() {
-    if (!currentWord || !userInput.trim()) return;
-
-    const isCorrect =
-      userInput.trim().toLowerCase() === currentWord.word.toLowerCase();
-    const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
-
-    if (isCorrect) {
-      recordWordPractice(currentWord.id, true, newAttempts, 0);
-      setResults((prev) => ({ ...prev, correct: prev.correct + 1 }));
-      setShowAnswer(true);
-    } else {
-      if (newAttempts >= 2) {
-        recordWordPractice(currentWord.id, false, newAttempts, 0);
-        setResults((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-        setShowAnswer(true);
-      }
-    }
-  }
-
-  function handleSkip() {
-    if (!currentWord) return;
-    recordWordPractice(currentWord.id, false, attempts + 1, 0);
-    setResults((prev) => ({ ...prev, skipped: prev.skipped + 1 }));
-    goToNextWord();
-  }
-
-  function goToNextWord() {
-    if (currentWordIndex >= practiceWords.length - 1) {
-      endPracticeSession();
-      setSessionComplete(true);
-    } else {
-      setCurrentWordIndex(currentWordIndex + 1);
-      setUserInput("");
-      setShowAnswer(false);
-      setAttempts(0);
-    }
-  }
-
-  function goToPreviousWord() {
-    if (currentWordIndex > 0) {
-      setCurrentWordIndex(currentWordIndex - 1);
-      setUserInput("");
-      setShowAnswer(false);
-      setAttempts(0);
-    }
   }
 
   return (
@@ -324,6 +383,20 @@ function PracticePage() {
               )}
             </div>
 
+            {feedbackMessage && (
+              <p
+                className={`mt-3 text-center text-sm ${
+                  feedbackMessage.type === "success"
+                    ? "text-green-600/70"
+                    : feedbackMessage.type === "error"
+                      ? "text-red-600/70"
+                      : "text-zinc-600"
+                }`}
+              >
+                {feedbackMessage.text}
+              </p>
+            )}
+
             {showAnswer &&
               userInput.toLowerCase() !== currentWord.word.toLowerCase() && (
                 <div className="mt-4 p-4 bg-red-900/20 border border-red-900/50 rounded-lg">
@@ -344,13 +417,12 @@ function PracticePage() {
                   >
                     Submit (Enter)
                   </Button>
-                  <Button onClick={handleSkip} variant="secondary">
-                    <SkipForward className="w-4 h-4" />
-                    Skip
+                  <Button onClick={handleShowAnswer} variant="secondary">
+                    Show Answer
                   </Button>
                 </>
               ) : (
-                <Button onClick={goToNextWord} className="w-full">
+                <Button onClick={goToNextWord} className="flex-1">
                   {currentWordIndex >= practiceWords.length - 1
                     ? "Finish"
                     : "Next Word"}{" "}
@@ -378,7 +450,8 @@ function PracticePage() {
                   Replay
                 </span>
                 <span>
-                  <kbd className="px-2 py-1 bg-zinc-800 rounded">→</kbd> Next
+                  <kbd className="px-2 py-1 bg-zinc-800 rounded">→</kbd> Show
+                  Answer
                 </span>
                 <span>
                   <kbd className="px-2 py-1 bg-zinc-800 rounded">←</kbd>{" "}
