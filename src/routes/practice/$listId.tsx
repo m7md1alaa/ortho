@@ -287,6 +287,16 @@ function PracticePage() {
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (showAnswer) {
+                      goToNextWord();
+                    } else {
+                      handleSubmit();
+                    }
+                  }
+                }}
                 placeholder="Type the word you hear..."
                 disabled={showAnswer}
                 className={`w-full px-6 py-4 text-center text-2xl font-medium bg-zinc-800 border-2 rounded-xl focus:outline-none transition-all ${

@@ -28,7 +28,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { addWord, deleteWord, store, updateWord } from "@/store";
+import {
+  addWord,
+  deleteWord,
+  store,
+  updateWord,
+  updateWordList,
+} from "@/store";
 import type { Word } from "@/types";
 
 export const Route = createFileRoute("/lists/$listId")({
@@ -51,6 +57,21 @@ function ListDetailPage() {
   const [editingWord, setEditingWord] = useState<Word | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isEditingList, setIsEditingList] = useState(false);
+  const [editName, setEditName] = useState(list?.name || "");
+  const [editDescription, setEditDescription] = useState(
+    list?.description || "",
+  );
+
+  function handleSaveListEdit() {
+    if (editName.trim()) {
+      updateWordList(listId, {
+        name: editName.trim(),
+        description: editDescription.trim() || undefined,
+      });
+      setIsEditingList(false);
+    }
+  }
 
   if (!list) {
     return (
@@ -79,12 +100,92 @@ function ListDetailPage() {
             <ArrowLeft className="w-4 h-4" />
             Back to lists
           </Link>
-          <h1 className="text-4xl font-bold tracking-tight mb-2">
-            {list.name}
-          </h1>
-          {list.description && (
-            <p className="text-zinc-400 text-lg">{list.description}</p>
-          )}
+          <div className="group">
+            {isEditingList ? (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSaveListEdit();
+                    } else if (e.key === "Escape") {
+                      setIsEditingList(false);
+                    }
+                  }}
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    boxShadow: "none",
+                    background: "transparent",
+                  }}
+                  className="w-full text-4xl font-bold tracking-tight text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0"
+                  placeholder="List name"
+                  autoFocus
+                />
+                <input
+                  type="text"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSaveListEdit();
+                    } else if (e.key === "Escape") {
+                      setIsEditingList(false);
+                    }
+                  }}
+                  style={{
+                    border: "none",
+                    outline: "none",
+                    boxShadow: "none",
+                    background: "transparent",
+                  }}
+                  className="w-full text-lg text-zinc-400 placeholder:text-zinc-600 focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0"
+                  placeholder="Description (optional)"
+                />
+                <div className="flex gap-2 pt-2">
+                  <Button size="sm" onClick={handleSaveListEdit}>
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Save
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setIsEditingList(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-4xl font-bold tracking-tight">
+                    {list.name}
+                  </h1>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => {
+                      setEditName(list.name);
+                      setEditDescription(list.description || "");
+                      setIsEditingList(true);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    title="Edit list"
+                  >
+                    <Edit2 className="w-5 h-5" />
+                  </Button>
+                </div>
+                {list.description && (
+                  <p className="text-zinc-400 text-lg">{list.description}</p>
+                )}
+              </>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
