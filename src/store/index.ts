@@ -116,6 +116,77 @@ export function addWord(listId: string, word: Omit<Word, "id">): Word {
   return newWord;
 }
 
+export interface BulkImportResult {
+  added: number;
+  skipped: number;
+  total: number;
+}
+
+export function addWordsBulk(
+  listId: string,
+  words: Array<{ word: string; definition?: string; example?: string }>,
+): BulkImportResult {
+  const MAX_WORDS = 300;
+  const trimmedWords = words.slice(0, MAX_WORDS);
+
+  let added = 0;
+  let skipped = 0;
+  const newWords: Word[] = [];
+
+  store.setState((state) => {
+    const list = state.wordLists.find((l) => l.id === listId);
+    if (!list) return state;
+
+    const existingWords = new Set(
+      list.words.map((w) => w.word.toLowerCase().trim()),
+    );
+
+    for (const wordData of trimmedWords) {
+      const trimmedWord = wordData.word.trim();
+      if (!trimmedWord) continue;
+
+      if (existingWords.has(trimmedWord.toLowerCase())) {
+        skipped++;
+        continue;
+      }
+
+      const newWord: Word = {
+        id: generateId(),
+        word: trimmedWord,
+        definition: wordData.definition?.trim() || undefined,
+        example: wordData.example?.trim() || undefined,
+        difficulty: "medium",
+        correctCount: 0,
+        incorrectCount: 0,
+        streak: 0,
+      };
+
+      newWords.push(newWord);
+      existingWords.add(trimmedWord.toLowerCase());
+      added++;
+    }
+
+    return {
+      ...state,
+      wordLists: state.wordLists.map((list) =>
+        list.id === listId
+          ? {
+              ...list,
+              words: [...list.words, ...newWords],
+              updatedAt: new Date(),
+            }
+          : list,
+      ),
+    };
+  });
+
+  return {
+    added,
+    skipped,
+    total: trimmedWords.length,
+  };
+}
+
 export function updateWord(
   listId: string,
   wordId: string,

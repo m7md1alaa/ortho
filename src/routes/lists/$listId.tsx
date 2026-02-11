@@ -10,11 +10,13 @@ import {
   Plus,
   Save,
   Trash2,
+  Upload,
   Volume2,
   X,
 } from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
+import { BulkImportModal } from "@/components/BulkImportModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,6 +50,7 @@ function ListDetailPage() {
   const list = wordLists.find((l) => l.id === listId);
   const [editingWord, setEditingWord] = useState<Word | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   if (!list) {
     return (
@@ -165,14 +168,24 @@ function ListDetailPage() {
             )}
 
             {!isAdding && !editingWord && (
-              <Button
-                onClick={() => setIsAdding(true)}
-                className="w-full"
-                variant="secondary"
-              >
-                <Plus className="w-5 h-5" />
-                Add Word
-              </Button>
+              <div className="space-y-3">
+                <Button
+                  onClick={() => setIsAdding(true)}
+                  className="w-full"
+                  variant="secondary"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add Word
+                </Button>
+                <Button
+                  onClick={() => setIsImportModalOpen(true)}
+                  className="w-full"
+                  variant="outline"
+                >
+                  <Upload className="w-5 h-5" />
+                  Import Words
+                </Button>
+              </div>
             )}
           </div>
 
@@ -203,6 +216,13 @@ function ListDetailPage() {
           </div>
         </div>
       </div>
+
+      <BulkImportModal
+        listId={listId}
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        existingWords={list?.words.map((w) => w.word) || []}
+      />
     </div>
   );
 }
