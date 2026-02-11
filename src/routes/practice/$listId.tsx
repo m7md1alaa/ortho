@@ -11,6 +11,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   endPracticeSession,
   recordWordPractice,
@@ -254,14 +255,17 @@ function PracticePage() {
 
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 sm:p-12">
           <div className="text-center mb-8">
-            <button
+            <Button
               onClick={() => speakWord(currentWord.word)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors mb-6"
+              variant="secondary"
+              className="rounded-full mb-6"
             >
               <Volume2 className="w-5 h-5" />
               <span>Listen</span>
-              <span className="text-zinc-500 text-sm">(Ctrl + Space)</span>
-            </button>
+              <span className="text-muted-foreground text-sm">
+                (Ctrl + Space)
+              </span>
+            </Button>
 
             {currentWord.definition && (
               <p className="text-zinc-400 text-lg mb-2">
@@ -323,31 +327,25 @@ function PracticePage() {
             <div className="flex gap-3 mt-6">
               {!showAnswer ? (
                 <>
-                  <button
+                  <Button
                     onClick={handleSubmit}
                     disabled={!userInput.trim()}
-                    className="flex-1 px-6 py-3 bg-zinc-100 text-black font-medium rounded-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1"
                   >
                     Submit (Enter)
-                  </button>
-                  <button
-                    onClick={handleSkip}
-                    className="px-6 py-3 bg-zinc-800 text-zinc-400 rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-2"
-                  >
+                  </Button>
+                  <Button onClick={handleSkip} variant="secondary">
                     <SkipForward className="w-4 h-4" />
                     Skip
-                  </button>
+                  </Button>
                 </>
               ) : (
-                <button
-                  onClick={goToNextWord}
-                  className="w-full px-6 py-3 bg-zinc-100 text-black font-medium rounded-lg hover:bg-white transition-colors"
-                >
+                <Button onClick={goToNextWord} className="w-full">
                   {currentWordIndex >= practiceWords.length - 1
                     ? "Finish"
                     : "Next Word"}{" "}
                   →
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -442,13 +440,10 @@ function ResultsScreen({
           </div>
 
           <div className="space-y-3">
-            <button
-              onClick={onRestart}
-              className="w-full px-6 py-3 bg-zinc-100 text-black font-medium rounded-lg hover:bg-white transition-colors flex items-center justify-center gap-2"
-            >
+            <Button onClick={onRestart} className="w-full">
               <RotateCcw className="w-4 h-4" />
               Practice Again
-            </button>
+            </Button>
             <Link
               to="/lists"
               className="block w-full px-6 py-3 bg-zinc-800 text-zinc-300 text-center rounded-lg hover:bg-zinc-700 transition-colors"

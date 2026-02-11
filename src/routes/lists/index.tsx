@@ -11,6 +11,10 @@ import {
 } from "lucide-react";
 import { useId } from "react";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { addWordList, deleteWordList, store } from "@/store";
 import type { Word, WordList } from "@/types";
 
@@ -75,23 +79,17 @@ function ListsPage() {
               >
                 <form.Field name="name">
                   {(field) => (
-                    <div>
-                      <label
-                        htmlFor={nameId}
-                        className="block text-sm font-medium text-zinc-400 mb-1"
-                      >
-                        List Name
-                      </label>
-                      <input
+                    <div className="space-y-2">
+                      <Label htmlFor={nameId}>List Name</Label>
+                      <Input
                         id={nameId}
                         type="text"
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder="e.g., GRE Vocabulary"
-                        className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all"
                       />
                       {field.state.meta.errors.length > 0 && (
-                        <p className="mt-1 text-sm text-red-400">
+                        <p className="text-sm text-destructive">
                           {String(field.state.meta.errors[0])}
                         </p>
                       )}
@@ -101,32 +99,28 @@ function ListsPage() {
 
                 <form.Field name="description">
                   {(field) => (
-                    <div>
-                      <label
-                        htmlFor={descriptionId}
-                        className="block text-sm font-medium text-zinc-400 mb-1"
-                      >
+                    <div className="space-y-2">
+                      <Label htmlFor={descriptionId}>
                         Description (optional)
-                      </label>
-                      <textarea
+                      </Label>
+                      <Textarea
                         id={descriptionId}
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder="Brief description of this list..."
                         rows={3}
-                        className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all resize-none"
                       />
                     </div>
                   )}
                 </form.Field>
 
-                <button
+                <Button
                   type="submit"
                   disabled={form.state.isSubmitting}
-                  className="w-full px-4 py-2 bg-zinc-100 text-black font-medium rounded-lg hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full"
                 >
                   Create List
-                </button>
+                </Button>
               </form>
             </div>
           </div>
@@ -193,14 +187,15 @@ function ListCard({ list }: { list: WordList }) {
             <p className="text-zinc-500 mt-1 text-sm">{list.description}</p>
           )}
         </div>
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={() => deleteWordList(list.id)}
-          className="p-2 text-zinc-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+          className="opacity-0 group-hover:opacity-100 hover:text-destructive"
           title="Delete list"
         >
           <Trash2 className="w-5 h-5" />
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center gap-6 text-sm text-zinc-500 mb-4">

@@ -15,6 +15,17 @@ import {
 } from "lucide-react";
 import { useId, useState } from "react";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { addWord, deleteWord, store, updateWord } from "@/store";
 import type { Word } from "@/types";
 
@@ -154,14 +165,14 @@ function ListDetailPage() {
             )}
 
             {!isAdding && !editingWord && (
-              <button
-                type="button"
+              <Button
                 onClick={() => setIsAdding(true)}
-                className="w-full px-4 py-3 bg-zinc-800 text-zinc-300 rounded-lg hover:bg-zinc-700 transition-colors font-medium flex items-center justify-center gap-2"
+                className="w-full"
+                variant="secondary"
               >
                 <Plus className="w-5 h-5" />
                 Add Word
-              </button>
+              </Button>
             )}
           </div>
 
@@ -208,7 +219,6 @@ function WordForm({
   const wordId = useId();
   const definitionId = useId();
   const exampleId = useId();
-  const difficultyId = useId();
   const form = useForm({
     defaultValues: {
       word: word?.word || "",
@@ -235,23 +245,17 @@ function WordForm({
     >
       <form.Field name="word">
         {(field) => (
-          <div>
-            <label
-              htmlFor={wordId}
-              className="block text-sm font-medium text-zinc-400 mb-1"
-            >
-              Word *
-            </label>
-            <input
+          <div className="space-y-2">
+            <Label htmlFor={wordId}>Word *</Label>
+            <Input
               id={wordId}
               type="text"
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               placeholder="Enter the word"
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all"
             />
             {field.state.meta.errors.length > 0 && (
-              <p className="mt-1 text-sm text-red-400">
+              <p className="text-sm text-destructive">
                 {String(field.state.meta.errors[0])}
               </p>
             )}
@@ -261,20 +265,14 @@ function WordForm({
 
       <form.Field name="definition">
         {(field) => (
-          <div>
-            <label
-              htmlFor={definitionId}
-              className="block text-sm font-medium text-zinc-400 mb-1"
-            >
-              Definition
-            </label>
-            <textarea
+          <div className="space-y-2">
+            <Label htmlFor={definitionId}>Definition</Label>
+            <Textarea
               id={definitionId}
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               placeholder="What does this word mean?"
               rows={2}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all resize-none"
             />
           </div>
         )}
@@ -282,20 +280,14 @@ function WordForm({
 
       <form.Field name="example">
         {(field) => (
-          <div>
-            <label
-              htmlFor={exampleId}
-              className="block text-sm font-medium text-zinc-400 mb-1"
-            >
-              Example Sentence
-            </label>
-            <textarea
+          <div className="space-y-2">
+            <Label htmlFor={exampleId}>Example Sentence</Label>
+            <Textarea
               id={exampleId}
               value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               placeholder="Use the word in a sentence..."
               rows={2}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all resize-none"
             />
           </div>
         )}
@@ -303,45 +295,39 @@ function WordForm({
 
       <form.Field name="difficulty">
         {(field) => (
-          <div>
-            <label
-              htmlFor={difficultyId}
-              className="block text-sm font-medium text-zinc-400 mb-1"
-            >
-              Difficulty
-            </label>
-            <select
-              id={difficultyId}
+          <div className="space-y-2">
+            <Label>Difficulty</Label>
+            <Select
               value={field.state.value}
-              onChange={(e) =>
-                field.handleChange(e.target.value as "easy" | "medium" | "hard")
+              onValueChange={(value) =>
+                field.handleChange(value as "easy" | "medium" | "hard")
               }
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:border-transparent transition-all"
             >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="easy">Easy</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="hard">Hard</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         )}
       </form.Field>
 
       <div className="flex gap-3 pt-2">
-        <button
+        <Button
           type="submit"
           disabled={form.state.isSubmitting}
-          className="flex-1 px-4 py-2 bg-zinc-100 text-black font-medium rounded-lg hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="flex-1"
         >
           <Save className="w-4 h-4" />
           {word ? "Update" : "Add"} Word
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 bg-zinc-800 text-zinc-400 rounded-lg hover:bg-zinc-700 transition-colors"
-        >
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel}>
           <X className="w-4 h-4" />
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -379,14 +365,14 @@ function WordCard({
           <div className="flex items-center gap-3 mb-2">
             <span className="text-zinc-600 text-sm font-mono">#{index}</span>
             <h3 className="text-xl font-semibold text-zinc-100">{word.word}</h3>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={speakWord}
-              className="p-1 text-zinc-600 hover:text-zinc-300 transition-colors"
               title="Listen"
             >
               <Volume2 className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
 
           {word.definition && (
@@ -443,22 +429,18 @@ function WordCard({
         </div>
 
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="p-2 text-zinc-600 hover:text-zinc-300 transition-colors"
-            title="Edit"
-          >
+          <Button variant="ghost" size="icon-xs" onClick={onEdit} title="Edit">
             <Edit2 className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-xs"
             onClick={onDelete}
-            className="p-2 text-zinc-600 hover:text-red-400 transition-colors"
             title="Delete"
+            className="hover:text-destructive"
           >
             <Trash2 className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>
