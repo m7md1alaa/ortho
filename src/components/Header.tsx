@@ -1,37 +1,39 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, List } from "lucide-react";
 
 export default function Header() {
-	return (
-		<header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800">
-			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div className="flex items-center justify-between h-16">
-					<Link to="/" className="flex items-center gap-2">
-						<div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center">
-							<BookOpen className="w-5 h-5 text-black" />
-						</div>
-						<span className="font-bold text-xl tracking-tight">Ortho</span>
-					</Link>
+  return (
+    <header className="sticky top-0 z-50 bg-[#0a0a0b]/90 backdrop-blur-sm border-b border-[#2a2a2c]">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="flex items-center justify-between h-16">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-8 h-8 border border-[#2d6b6b] flex items-center justify-center transition-all duration-300 group-hover:bg-[#2d6b6b]/10">
+              <span className="font-display text-lg text-[#f5f5f0] leading-none">
+                O
+              </span>
+            </div>
+            <span className="font-mono text-xs tracking-[0.2em] uppercase text-[#8a8a82] hidden sm:block">
+              Ortho
+            </span>
+          </Link>
 
-					<nav className="flex items-center gap-1">
-						<Link
-							to="/"
-							className="px-4 py-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-900"
-							activeProps={{ className: "text-white bg-zinc-900" }}
-						>
-							Home
-						</Link>
-						<Link
-							to="/lists"
-							className="px-4 py-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-zinc-900 flex items-center gap-2"
-							activeProps={{ className: "text-white bg-zinc-900" }}
-						>
-							<List className="w-4 h-4" />
-							Lists
-						</Link>
-					</nav>
-				</div>
-			</div>
-		</header>
-	);
+          <nav className="flex items-center gap-8">
+            <Link
+              to="/"
+              className="font-mono text-xs tracking-[0.15em] uppercase text-[#8a8a82] hover:text-[#f5f5f0] transition-colors duration-300 hover-underline"
+              activeProps={{ className: "text-[#f5f5f0]" }}
+            >
+              Home
+            </Link>
+            <Link
+              to="/lists"
+              className="font-mono text-xs tracking-[0.15em] uppercase text-[#8a8a82] hover:text-[#f5f5f0] transition-colors duration-300 hover-underline"
+              activeProps={{ className: "text-[#f5f5f0]" }}
+            >
+              Lists
+            </Link>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
 }
