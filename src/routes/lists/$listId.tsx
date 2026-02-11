@@ -54,7 +54,6 @@ function ListDetailPage() {
   const { listId } = useParams({ from: "/lists/$listId" });
   const wordLists = useStore(store, (state) => state.wordLists);
   const list = wordLists.find((l) => l.id === listId);
-  const [editingWord, setEditingWord] = useState<Word | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isEditingList, setIsEditingList] = useState(false);
@@ -239,36 +238,25 @@ function ListDetailPage() {
               Start Practice Session
             </Link>
 
-            {(isAdding || editingWord) && (
+            {isAdding && (
               <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  {editingWord ? "Edit Word" : "Add New Word"}
-                </h3>
+                <h3 className="text-lg font-semibold mb-4">Add New Word</h3>
                 <WordForm
-                  word={editingWord}
                   onSubmit={(data) => {
-                    if (editingWord) {
-                      updateWord(listId, editingWord.id, data);
-                      setEditingWord(null);
-                    } else {
-                      addWord(listId, {
-                        ...data,
-                        correctCount: 0,
-                        incorrectCount: 0,
-                        streak: 0,
-                      });
-                      setIsAdding(false);
-                    }
-                  }}
-                  onCancel={() => {
+                    addWord(listId, {
+                      ...data,
+                      correctCount: 0,
+                      incorrectCount: 0,
+                      streak: 0,
+                    });
                     setIsAdding(false);
-                    setEditingWord(null);
                   }}
+                  onCancel={() => setIsAdding(false)}
                 />
               </div>
             )}
 
-            {!isAdding && !editingWord && (
+            {!isAdding && (
               <div className="space-y-3">
                 <Button
                   onClick={() => setIsAdding(true)}
@@ -308,7 +296,7 @@ function ListDetailPage() {
                     key={word.id}
                     word={word}
                     index={index + 1}
-                    onEdit={() => setEditingWord(word)}
+                    listId={listId}
                     onDelete={() => deleteWord(listId, word.id)}
                   />
                 ))}
@@ -329,11 +317,9 @@ function ListDetailPage() {
 }
 
 function WordForm({
-  word,
   onSubmit,
   onCancel,
 }: {
-  word: Word | null;
   onSubmit: (data: WordFormData) => void;
   onCancel: () => void;
 }) {
@@ -342,10 +328,10 @@ function WordForm({
   const exampleId = useId();
   const form = useForm({
     defaultValues: {
-      word: word?.word || "",
-      definition: word?.definition || "",
-      example: word?.example || "",
-      difficulty: word?.difficulty || "medium",
+      word: "",
+      definition: "",
+      example: "",
+      difficulty: "medium" as "easy" | "medium" | "hard",
     },
     validators: {
       onSubmit: wordFormSchema,
@@ -444,7 +430,7 @@ function WordForm({
           className="flex-1"
         >
           <Save className="w-4 h-4" />
-          {word ? "Update" : "Add"} Word
+          Add Word
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>
           <X className="w-4 h-4" />
@@ -457,14 +443,20 @@ function WordForm({
 function WordCard({
   word,
   index,
-  onEdit,
+  listId,
   onDelete,
 }: {
   word: Word;
   index: number;
-  onEdit: () => void;
+  listId: string;
   onDelete: () => void;
 }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editWord, setEditWord] = useState(word.word);
+  const [editDefinition, setEditDefinition] = useState(word.definition || "");
+  const [editExample, setEditExample] = useState(word.example || "");
+  const [editDifficulty, setEditDifficulty] = useState(word.difficulty);
+
   const speakWord = () => {
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(word.word);
@@ -478,6 +470,132 @@ function WordCard({
     totalAttempts > 0
       ? Math.round((word.correctCount / totalAttempts) * 100)
       : 0;
+
+  function handleSave() {
+    if (editWord.trim()) {
+      updateWord(listId, word.id, {
+        word: editWord.trim(),
+        definition: editDefinition.trim() || undefined,
+        example: editExample.trim() || undefined,
+        difficulty: editDifficulty,
+      });
+      setIsEditing(false);
+    }
+  }
+
+  function handleCancel() {
+    setEditWord(word.word);
+    setEditDefinition(word.definition || "");
+    setEditExample(word.example || "");
+    setEditDifficulty(word.difficulty);
+    setIsEditing(false);
+  }
+
+  if (isEditing) {
+    return (
+      <div className="group bg-zinc-900/50 border border-zinc-700 rounded-xl p-4">
+        <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <span className="text-zinc-600 text-sm font-mono">#{index}</span>
+            <input
+              type="text"
+              value={editWord}
+              onChange={(e) => setEditWord(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSave();
+                } else if (e.key === "Escape") {
+                  handleCancel();
+                }
+              }}
+              style={{
+                border: "none",
+                outline: "none",
+                boxShadow: "none",
+                background: "transparent",
+              }}
+              className="flex-1 text-xl font-semibold text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-0"
+              placeholder="Word"
+              autoFocus
+            />
+          </div>
+
+          <input
+            type="text"
+            value={editDefinition}
+            onChange={(e) => setEditDefinition(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSave();
+              } else if (e.key === "Escape") {
+                handleCancel();
+              }
+            }}
+            style={{
+              border: "none",
+              outline: "none",
+              boxShadow: "none",
+              background: "transparent",
+            }}
+            className="w-full text-zinc-400 placeholder:text-zinc-600 focus:outline-none focus:ring-0"
+            placeholder="Definition (optional)"
+          />
+
+          <input
+            type="text"
+            value={editExample}
+            onChange={(e) => setEditExample(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSave();
+              } else if (e.key === "Escape") {
+                handleCancel();
+              }
+            }}
+            style={{
+              border: "none",
+              outline: "none",
+              boxShadow: "none",
+              background: "transparent",
+            }}
+            className="w-full text-zinc-500 italic text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-0"
+            placeholder="Example sentence (optional)"
+          />
+
+          <div className="flex items-center justify-between pt-2">
+            <Select
+              value={editDifficulty}
+              onValueChange={(value) =>
+                setEditDifficulty(value as "easy" | "medium" | "hard")
+              }
+            >
+              <SelectTrigger className="w-28 h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="easy">Easy</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="hard">Hard</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleSave}>
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Save
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="group bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 transition-all">
@@ -550,7 +668,12 @@ function WordCard({
         </div>
 
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button variant="ghost" size="icon-xs" onClick={onEdit} title="Edit">
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={() => setIsEditing(true)}
+            title="Edit"
+          >
             <Edit2 className="w-4 h-4" />
           </Button>
           <Button
