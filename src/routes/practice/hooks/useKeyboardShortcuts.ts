@@ -5,6 +5,7 @@ export interface UseKeyboardShortcutsProps {
   currentWordIndex: number;
   showAnswer: boolean;
   currentWord: string | undefined;
+  inputFocused: boolean;
   goToPreviousWord: () => void;
   goToNextWord: () => void;
   handleShowAnswer: () => void;
@@ -12,7 +13,12 @@ export interface UseKeyboardShortcutsProps {
   speakWord: (word: string) => void;
   setShowAnswer: (value: boolean) => void;
   setUserInput: (value: string) => void;
-  setFeedbackMessage: (value: { text: string; type: string } | null) => void;
+  setFeedbackMessage: (
+    value: {
+      text: string;
+      type: "success" | "error" | "neutral" | "close";
+    } | null,
+  ) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
 }
 
@@ -21,6 +27,7 @@ export function useKeyboardShortcuts({
   currentWordIndex,
   showAnswer,
   currentWord,
+  inputFocused,
   goToPreviousWord,
   goToNextWord,
   handleShowAnswer,
@@ -31,50 +38,7 @@ export function useKeyboardShortcuts({
   setFeedbackMessage,
   inputRef,
 }: UseKeyboardShortcutsProps): void {
-  // Previous word
-  useHotkeys(
-    "left",
-    (e) => {
-      if (!sessionComplete && currentWordIndex > 0) {
-        e.preventDefault();
-        goToPreviousWord();
-      }
-    },
-    { enableOnFormTags: true },
-    [sessionComplete, currentWordIndex, goToPreviousWord],
-  );
-
-  // Next word / Show answer
-  useHotkeys(
-    "right",
-    (e) => {
-      if (!sessionComplete) {
-        e.preventDefault();
-        if (showAnswer) {
-          goToNextWord();
-        } else {
-          handleShowAnswer();
-        }
-      }
-    },
-    { enableOnFormTags: true },
-    [sessionComplete, showAnswer, goToNextWord, handleShowAnswer],
-  );
-
-  // Replay audio
-  useHotkeys(
-    "ctrl+space",
-    (e) => {
-      if (!sessionComplete && currentWord) {
-        e.preventDefault();
-        speakWord(currentWord);
-      }
-    },
-    { enableOnFormTags: true },
-    [sessionComplete, currentWord, speakWord],
-  );
-
-  // Submit / Next
+  // Submit / Next (Enter)
   useHotkeys(
     "enter",
     (e) => {
@@ -91,7 +55,74 @@ export function useKeyboardShortcuts({
     [sessionComplete, showAnswer, goToNextWord, handleSubmit],
   );
 
-  // Reset / Clear
+  // Show answer (Tab - only when not showing answer)
+  useHotkeys(
+    "tab",
+    (e) => {
+      if (!sessionComplete && !showAnswer) {
+        e.preventDefault();
+        handleShowAnswer();
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, showAnswer, handleShowAnswer],
+  );
+
+  // Replay audio (Space - only when input is NOT focused)
+  useHotkeys(
+    "space",
+    (e) => {
+      if (!sessionComplete && !inputFocused && currentWord) {
+        e.preventDefault();
+        speakWord(currentWord);
+      }
+    },
+    { enableOnFormTags: false }, // Don't enable on form tags
+    [sessionComplete, inputFocused, currentWord, speakWord],
+  );
+
+  // Next word with Cmd (Mac) / Alt (Windows) + Right Arrow (when showing answer)
+  // This leaves Ctrl+Arrow free for text navigation (jump to word boundaries)
+  useHotkeys(
+    "alt+right",
+    (e) => {
+      if (!sessionComplete && showAnswer) {
+        e.preventDefault();
+        goToNextWord();
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, showAnswer, goToNextWord],
+  );
+
+  // Previous word with Cmd (Mac) / Alt (Windows) + Left Arrow
+  // This leaves Ctrl+Arrow free for text navigation (jump to word boundaries)
+  useHotkeys(
+    "alt+left",
+    (e) => {
+      if (!sessionComplete && currentWordIndex > 0) {
+        e.preventDefault();
+        goToPreviousWord();
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, currentWordIndex, goToPreviousWord],
+  );
+
+  // Focus input field (Cmd/Ctrl + /)
+  useHotkeys(
+    "mod+/",
+    (e) => {
+      if (!sessionComplete) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    },
+    { enableOnFormTags: true },
+    [sessionComplete, inputRef],
+  );
+
+  // Reset / Clear (Esc)
   useHotkeys(
     "esc",
     (e) => {

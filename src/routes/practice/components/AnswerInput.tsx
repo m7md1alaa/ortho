@@ -16,6 +16,8 @@ interface AnswerInputProps {
   hint: string | null;
   borderClass: string;
   correctWord: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 export function AnswerInput({
@@ -29,6 +31,8 @@ export function AnswerInput({
   hint,
   borderClass,
   correctWord,
+  onFocus,
+  onBlur,
 }: AnswerInputProps) {
   const getFeedbackColor = (type: FeedbackType) => {
     switch (type) {
@@ -57,6 +61,8 @@ export function AnswerInput({
               onSubmit();
             }
           }}
+          onFocus={onFocus}
+          onBlur={onBlur}
           placeholder="Type the word you hear..."
           disabled={showAnswer}
           className={cn(

@@ -26,9 +26,11 @@ export interface UsePracticeSessionReturn {
   userInput: string;
   setUserInput: (value: string) => void;
   showAnswer: boolean;
+  setShowAnswer: (value: boolean) => void;
   attempts: number;
   sessionComplete: boolean;
   feedbackMessage: FeedbackMessage | null;
+  setFeedbackMessage: (value: FeedbackMessage | null) => void;
   hasAnsweredCorrectly: boolean;
   results: PracticeResults;
   inputRef: React.RefObject<HTMLInputElement | null>;
@@ -172,9 +174,11 @@ export function usePracticeSession(
     userInput,
     setUserInput,
     showAnswer,
+    setShowAnswer,
     attempts,
     sessionComplete,
     feedbackMessage,
+    setFeedbackMessage,
     hasAnsweredCorrectly,
     results,
     inputRef,

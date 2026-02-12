@@ -18,10 +18,13 @@ interface PracticeCardProps {
   feedbackMessage: FeedbackMessage | null;
   hint: string | null;
   inputBorderClass: string;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   onSubmit: () => void;
   onShowAnswer: () => void;
   onNextWord: () => void;
   onPlayAudio: () => void;
+  onFocusInput: () => void;
+  onBlurInput: () => void;
   exitLink: string;
 }
 
@@ -36,10 +39,13 @@ export function PracticeCard({
   feedbackMessage,
   hint,
   inputBorderClass,
+  inputRef,
   onSubmit,
   onShowAnswer,
   onNextWord,
   onPlayAudio,
+  onFocusInput,
+  onBlurInput,
   exitLink,
 }: PracticeCardProps) {
   const progress = ((currentWordIndex + 1) / totalWords) * 100;
@@ -82,13 +88,15 @@ export function PracticeCard({
             value={userInput}
             onChange={setUserInput}
             onSubmit={onSubmit}
-            inputRef={{ current: null }}
+            inputRef={inputRef}
             showAnswer={showAnswer}
             hasAnsweredCorrectly={hasAnsweredCorrectly}
             feedbackMessage={feedbackMessage}
             hint={hint}
             borderClass={inputBorderClass}
             correctWord={currentWord.word}
+            onFocus={onFocusInput}
+            onBlur={onBlurInput}
           />
 
           {/* Action Buttons */}

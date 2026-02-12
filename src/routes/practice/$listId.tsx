@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
+import { useState } from "react";
 import { calculateHint, getInputBorderClass } from "@/lib/utils";
 import { store } from "@/store";
 import { PracticeCard } from "./components/PracticeCard";
@@ -25,9 +26,11 @@ function PracticePage() {
     userInput,
     setUserInput,
     showAnswer,
+    setShowAnswer,
     attempts,
     sessionComplete,
     feedbackMessage,
+    setFeedbackMessage,
     hasAnsweredCorrectly,
     results,
     inputRef,
@@ -40,6 +43,8 @@ function PracticePage() {
     resetSession,
   } = usePracticeSession(listId, list?.words || [], currentWordIndex);
 
+  const [inputFocused, setInputFocused] = useState(false);
+
   const currentWord = practiceWords[currentWordIndex];
 
   const { speakWord } = useSpeech(audioEnabled, speechRate, currentWord?.word);
@@ -50,14 +55,15 @@ function PracticePage() {
     currentWordIndex,
     showAnswer,
     currentWord: currentWord?.word,
+    inputFocused,
     goToPreviousWord,
     goToNextWord,
     handleShowAnswer,
     handleSubmit,
     speakWord,
-    setShowAnswer: () => {},
+    setShowAnswer,
     setUserInput,
-    setFeedbackMessage: () => {},
+    setFeedbackMessage,
     inputRef,
   });
 
@@ -146,10 +152,13 @@ function PracticePage() {
       feedbackMessage={feedbackMessage}
       hint={hint}
       inputBorderClass={inputBorderClass}
+      inputRef={inputRef}
       onSubmit={handleSubmit}
       onShowAnswer={handleShowAnswer}
       onNextWord={goToNextWord}
       onPlayAudio={() => speakWord(currentWord.word)}
+      onFocusInput={() => setInputFocused(true)}
+      onBlurInput={() => setInputFocused(false)}
       exitLink="/lists"
     />
   );
