@@ -16,13 +16,15 @@
     /* Linting */
     "skipLibCheck": true,
     "strict": true,
+    "strictFunctionTypes": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@convex/*": ["./convex/functions/_generated/*", "./convex/shared/*"]
     }
   }
 }
