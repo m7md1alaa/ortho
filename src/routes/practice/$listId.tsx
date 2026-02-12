@@ -3,7 +3,9 @@ import { useStore } from "@tanstack/react-store";
 import {
   ArrowLeft,
   CheckCircle,
+  HelpCircle,
   Keyboard,
+  Lightbulb,
   RotateCcw,
   Trophy,
   Volume2,
@@ -12,6 +14,11 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Button } from "@/components/ui/button";
+import {
+  generateWordHint,
+  getAnswerFeedback,
+  isCloseAnswer,
+} from "@/lib/utils";
 import {
   endPracticeSession,
   recordWordPractice,
@@ -39,8 +46,9 @@ function PracticePage() {
   const [sessionComplete, setSessionComplete] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<{
     text: string;
-    type: "success" | "error" | "neutral";
+    type: "success" | "error" | "neutral" | "close";
   } | null>(null);
+  const [hasAnsweredCorrectly, setHasAnsweredCorrectly] = useState(false);
   const [results, setResults] = useState<{
     correct: number;
     incorrect: number;
@@ -59,17 +67,41 @@ function PracticePage() {
     ? ((currentWordIndex + 1) / practiceWords.length) * 100
     : 0;
 
+  // Calculate hint based on attempts
+  const getHint = useCallback(() => {
+    if (!currentWord) return null;
+    const word = currentWord.word;
+
+    if (attempts === 0) return null;
+    if (attempts === 1) {
+      // Show word length only
+      return generateWordHint(word, []);
+    }
+    if (attempts === 2) {
+      // Show first letter + length
+      return generateWordHint(word, [0]);
+    }
+    if (attempts >= 3) {
+      // Show first and last letters
+      const lastIndex = word.length - 1;
+      return generateWordHint(word, [0, lastIndex]);
+    }
+    return null;
+  }, [currentWord, attempts]);
+
+  const hint = getHint();
+
   useEffect(() => {
     if (list && !currentSession) {
       startPracticeSession(listId);
       const words = [...list.words].sort(() => Math.random() - 0.5);
       setPracticeWords(words);
     }
-  }, [list, listId]);
+  }, [list, listId, currentSession]);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [currentWordIndex]);
+  }, []);
 
   const speakWord = useCallback(
     (word: string) => {
@@ -97,20 +129,34 @@ function PracticePage() {
   const handleSubmit = useCallback(() => {
     if (!currentWord || !userInput.trim()) return;
 
-    const isCorrect =
-      userInput.trim().toLowerCase() === currentWord.word.toLowerCase();
+    const feedback = getAnswerFeedback(userInput, currentWord.word);
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
 
-    if (isCorrect) {
+    if (feedback.isCorrect) {
       recordWordPractice(currentWord.id, true, newAttempts, 0);
       setResults((prev) => ({ ...prev, correct: prev.correct + 1 }));
+      setHasAnsweredCorrectly(true);
       setShowAnswer(true);
-      setFeedbackMessage({ text: "Good", type: "success" });
+      setFeedbackMessage({
+        text: feedback.message,
+        type: "success",
+      });
+    } else if (feedback.isClose) {
+      // Close but not correct - let them try again with encouragement
+      setFeedbackMessage({
+        text: `${feedback.message} (${newAttempts} ${newAttempts === 1 ? "attempt" : "attempts"})`,
+        type: "close",
+      });
+      // Don't clear input, let them edit
+      inputRef.current?.focus();
     } else {
-      // Don't show answer, just give feedback to try again
-      setFeedbackMessage({ text: "Try again", type: "neutral" });
-      setUserInput(""); // Clear input so they can try again
+      // Wrong answer
+      setFeedbackMessage({
+        text: `${feedback.message} (${newAttempts} ${newAttempts === 1 ? "attempt" : "attempts"})`,
+        type: "error",
+      });
+      // Don't clear input, let them edit
       inputRef.current?.focus();
     }
   }, [currentWord, userInput, attempts]);
@@ -120,7 +166,8 @@ function PracticePage() {
     recordWordPractice(currentWord.id, false, attempts, 0);
     setResults((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
     setShowAnswer(true);
-    setFeedbackMessage({ text: "Not quite", type: "error" });
+    setHasAnsweredCorrectly(false);
+    setFeedbackMessage({ text: "Answer revealed", type: "neutral" });
   }, [currentWord, attempts]);
 
   const goToNextWord = useCallback(() => {
@@ -132,6 +179,7 @@ function PracticePage() {
       setUserInput("");
       setShowAnswer(false);
       setAttempts(0);
+      setHasAnsweredCorrectly(false);
       setFeedbackMessage(null);
     }
   }, [currentWordIndex, practiceWords.length]);
@@ -142,23 +190,20 @@ function PracticePage() {
       setUserInput("");
       setShowAnswer(false);
       setAttempts(0);
+      setHasAnsweredCorrectly(false);
       setFeedbackMessage(null);
     }
   }, [currentWordIndex]);
 
-  // Auto-advance when answer is correct (show green border briefly)
+  // Auto-advance when answer is correct
   useEffect(() => {
-    if (
-      showAnswer &&
-      currentWord &&
-      userInput.toLowerCase() === currentWord.word.toLowerCase()
-    ) {
+    if (showAnswer && hasAnsweredCorrectly) {
       const timer = setTimeout(() => {
         goToNextWord();
-      }, 800);
+      }, 1200);
       return () => clearTimeout(timer);
     }
-  }, [showAnswer, currentWord, userInput, goToNextWord]);
+  }, [showAnswer, hasAnsweredCorrectly, goToNextWord]);
 
   // Keyboard shortcuts using react-hotkeys-hook
   useHotkeys(
@@ -232,6 +277,22 @@ function PracticePage() {
     [sessionComplete],
   );
 
+  // Get input border color based on state
+  const getInputBorderClass = () => {
+    if (showAnswer) {
+      return hasAnsweredCorrectly
+        ? "border-green-500 text-green-400"
+        : "border-red-500 text-red-400";
+    }
+    // Check if current input is close to answer
+    if (userInput.trim() && currentWord) {
+      if (isCloseAnswer(userInput, currentWord.word)) {
+        return "border-amber-500 text-amber-400 focus:border-amber-400";
+      }
+    }
+    return "border-zinc-700 focus:border-zinc-500";
+  };
+
   if (!list) {
     return (
       <div className="min-h-screen bg-black text-zinc-100 flex items-center justify-center">
@@ -280,6 +341,7 @@ function PracticePage() {
           setUserInput("");
           setShowAnswer(false);
           setAttempts(0);
+          setHasAnsweredCorrectly(false);
           startPracticeSession(listId);
           const words = [...list.words].sort(() => Math.random() - 0.5);
           setPracticeWords(words);
@@ -358,13 +420,7 @@ function PracticePage() {
                 }}
                 placeholder="Type the word you hear..."
                 disabled={showAnswer}
-                className={`w-full px-6 py-4 text-center text-2xl font-medium bg-zinc-800 border-2 rounded-xl focus:outline-none transition-all ${
-                  showAnswer
-                    ? userInput.toLowerCase() === currentWord.word.toLowerCase()
-                      ? "border-green-500 text-green-400"
-                      : "border-red-500 text-red-400"
-                    : "border-zinc-700 focus:border-zinc-500"
-                }`}
+                className={`w-full px-6 py-4 text-center text-2xl font-medium bg-zinc-800 border-2 rounded-xl focus:outline-none transition-all ${getInputBorderClass()}`}
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
@@ -373,8 +429,7 @@ function PracticePage() {
 
               {showAnswer && (
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  {userInput.toLowerCase() ===
-                  currentWord.word.toLowerCase() ? (
+                  {hasAnsweredCorrectly ? (
                     <CheckCircle className="w-8 h-8 text-green-500" />
                   ) : (
                     <XCircle className="w-8 h-8 text-red-500" />
@@ -383,29 +438,40 @@ function PracticePage() {
               )}
             </div>
 
+            {/* Hint display */}
+            {hint && !showAnswer && (
+              <div className="mt-3 flex items-center justify-center gap-2 text-amber-500/80">
+                <Lightbulb className="w-4 h-4" />
+                <span className="text-lg font-medium tracking-wider">
+                  {hint}
+                </span>
+              </div>
+            )}
+
             {feedbackMessage && (
               <p
-                className={`mt-3 text-center text-sm ${
+                className={`mt-3 text-center text-sm font-medium ${
                   feedbackMessage.type === "success"
-                    ? "text-green-600/70"
+                    ? "text-green-500"
                     : feedbackMessage.type === "error"
-                      ? "text-red-600/70"
-                      : "text-zinc-600"
+                      ? "text-red-500"
+                      : feedbackMessage.type === "close"
+                        ? "text-amber-500"
+                        : "text-zinc-500"
                 }`}
               >
                 {feedbackMessage.text}
               </p>
             )}
 
-            {showAnswer &&
-              userInput.toLowerCase() !== currentWord.word.toLowerCase() && (
-                <div className="mt-4 p-4 bg-red-900/20 border border-red-900/50 rounded-lg">
-                  <p className="text-red-400 text-center">
-                    Correct spelling:{" "}
-                    <span className="font-bold">{currentWord.word}</span>
-                  </p>
-                </div>
-              )}
+            {showAnswer && !hasAnsweredCorrectly && (
+              <div className="mt-4 p-4 bg-red-900/20 border border-red-900/50 rounded-lg">
+                <p className="text-red-400 text-center">
+                  Correct spelling:{" "}
+                  <span className="font-bold">{currentWord.word}</span>
+                </p>
+              </div>
+            )}
 
             <div className="flex gap-3 mt-6">
               {!showAnswer ? (
@@ -418,6 +484,7 @@ function PracticePage() {
                     Submit (Enter)
                   </Button>
                   <Button onClick={handleShowAnswer} variant="secondary">
+                    <HelpCircle className="w-4 h-4 mr-2" />
                     Show Answer
                   </Button>
                 </>
