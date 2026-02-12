@@ -118,3 +118,48 @@ export function getAnswerFeedback(
     feedbackType: "error",
   };
 }
+
+/**
+ * Calculate hint based on number of attempts
+ * Returns null if no hint should be shown
+ */
+export function calculateHint(word: string, attempts: number): string | null {
+  if (attempts === 0) return null;
+  if (attempts === 1) {
+    // Show word length only
+    return generateWordHint(word, []);
+  }
+  if (attempts === 2) {
+    // Show first letter + length
+    return generateWordHint(word, [0]);
+  }
+  if (attempts >= 3) {
+    // Show first and last letters
+    const lastIndex = word.length - 1;
+    return generateWordHint(word, [0, lastIndex]);
+  }
+  return null;
+}
+
+/**
+ * Get input border class based on answer state
+ */
+export function getInputBorderClass(
+  showAnswer: boolean,
+  hasAnsweredCorrectly: boolean,
+  userInput: string,
+  currentWord: string | undefined,
+): string {
+  if (showAnswer) {
+    return hasAnsweredCorrectly
+      ? "border-green-500 text-green-400 disabled:text-green-400 disabled:border-green-500"
+      : "border-red-500 text-red-400 disabled:text-red-400 disabled:border-red-500";
+  }
+  // Check if current input is close to answer
+  if (userInput.trim() && currentWord) {
+    if (isCloseAnswer(userInput, currentWord)) {
+      return "border-amber-500 text-amber-400 focus:border-amber-400";
+    }
+  }
+  return "border-zinc-700 focus:border-zinc-500";
+}
