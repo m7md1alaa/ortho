@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { RotateCcw, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { PracticeResults } from "../hooks/usePracticeSession";
+import type { PracticeResults } from "@/hooks/practice/usePracticeSession";
 
 interface ResultsScreenProps {
   results: PracticeResults;

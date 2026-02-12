@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { FeedbackMessage } from "@/hooks/practice/usePracticeSession";
 import type { Word } from "@/types";
-import type { FeedbackMessage } from "../hooks/usePracticeSession";
 import { AnswerInput } from "./AnswerInput";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { WordDisplay } from "./WordDisplay";

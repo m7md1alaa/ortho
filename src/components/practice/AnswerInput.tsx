@@ -1,9 +1,9 @@
 import { CheckCircle, Lightbulb, XCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 import type {
   FeedbackMessage,
   FeedbackType,
-} from "../hooks/usePracticeSession";
+} from "@/hooks/practice/usePracticeSession";
+import { cn } from "@/lib/utils";
 
 interface AnswerInputProps {
   value: string;

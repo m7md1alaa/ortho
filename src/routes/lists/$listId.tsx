@@ -3,6 +3,11 @@ import { useStore } from "@tanstack/react-store";
 import { Brain, Plus, Upload } from "lucide-react";
 import { useState } from "react";
 import { BulkImportModal } from "@/components/BulkImportModal";
+import { ListHeader } from "@/components/lists/ListHeader";
+import { ListNotFound } from "@/components/lists/ListNotFound";
+import { ListStats } from "@/components/lists/ListStats";
+import { WordCard } from "@/components/lists/WordCard";
+import { WordForm } from "@/components/lists/WordForm";
 import { Button } from "@/components/ui/button";
 import {
   addWord,
@@ -12,11 +17,6 @@ import {
   updateWordList,
 } from "@/store";
 import type { WordList } from "@/types";
-import { ListHeader } from "./components/ListHeader";
-import { ListNotFound } from "./components/ListNotFound";
-import { ListStats } from "./components/ListStats";
-import { WordCard } from "./components/WordCard";
-import { WordForm } from "./components/WordForm";
 
 export const Route = createFileRoute("/lists/$listId")({
   component: ListDetailPage,

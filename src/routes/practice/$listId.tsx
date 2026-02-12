@@ -1,13 +1,13 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { useState } from "react";
+import { PracticeCard } from "@/components/practice/PracticeCard";
+import { ResultsScreen } from "@/components/practice/ResultsScreen";
+import { useKeyboardShortcuts } from "@/hooks/practice/useKeyboardShortcuts";
+import { usePracticeSession } from "@/hooks/practice/usePracticeSession";
+import { useSpeech } from "@/hooks/practice/useSpeech";
 import { calculateHint, getInputBorderClass } from "@/lib/utils";
 import { store } from "@/store";
-import { PracticeCard } from "./components/PracticeCard";
-import { ResultsScreen } from "./components/ResultsScreen";
-import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
-import { usePracticeSession } from "./hooks/usePracticeSession";
-import { useSpeech } from "./hooks/useSpeech";
 
 export const Route = createFileRoute("/practice/$listId")({
   component: PracticePage,
