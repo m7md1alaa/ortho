@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ListsIndexRouteImport } from './routes/lists/index'
 import { Route as PracticeListIdRouteImport } from './routes/practice/$listId'
 import { Route as ListsListIdRouteImport } from './routes/lists/$listId'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const ListsListIdRoute = ListsListIdRouteImport.update({
   path: '/lists/$listId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
   '/lists/': typeof ListsIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
   '/lists': typeof ListsIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,25 @@ export interface FileRoutesById {
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
   '/lists/': typeof ListsIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lists/$listId' | '/practice/$listId' | '/lists/'
+  fullPaths:
+    | '/'
+    | '/lists/$listId'
+    | '/practice/$listId'
+    | '/lists/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lists/$listId' | '/practice/$listId' | '/lists'
-  id: '__root__' | '/' | '/lists/$listId' | '/practice/$listId' | '/lists/'
+  to: '/' | '/lists/$listId' | '/practice/$listId' | '/lists' | '/api/auth/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/lists/$listId'
+    | '/practice/$listId'
+    | '/lists/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +87,7 @@ export interface RootRouteChildren {
   ListsListIdRoute: typeof ListsListIdRoute
   PracticeListIdRoute: typeof PracticeListIdRoute
   ListsIndexRoute: typeof ListsIndexRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListsListIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +135,7 @@ const rootRouteChildren: RootRouteChildren = {
   ListsListIdRoute: ListsListIdRoute,
   PracticeListIdRoute: PracticeListIdRoute,
   ListsIndexRoute: ListsIndexRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
