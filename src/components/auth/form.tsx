@@ -5,6 +5,10 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  PasswordInput,
+  PasswordInputStrengthChecker,
+} from "@/components/ui/password-input";
 import { APP_NAME } from "@/lib/constants";
 import {
   useSignInMutationOptions,
@@ -270,16 +274,17 @@ export default function AuthComponent() {
                     <Label className="text-sm" htmlFor={field.name}>
                       Password
                     </Label>
-                    <Input
+                    <PasswordInput
                       autoComplete="new-password"
                       disabled={isLoading}
                       id={field.name}
                       name={field.name}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      type="password"
                       value={field.state.value}
-                    />
+                    >
+                      <PasswordInputStrengthChecker />
+                    </PasswordInput>
                     {field.state.meta.isTouched &&
                       field.state.meta.errors.length > 0 && (
                         <p className="text-red-500 text-sm">
@@ -455,14 +460,13 @@ export default function AuthComponent() {
                       Forgot your Password?
                     </Button>
                   </div>
-                  <Input
+                  <PasswordInput
                     autoComplete="current-password"
                     disabled={isLoading}
                     id={field.name}
                     name={field.name}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    type="password"
                     value={field.state.value}
                   />
                   {field.state.meta.isTouched &&
