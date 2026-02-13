@@ -176,6 +176,78 @@ export type DataModel = {
     searchIndexes: {};
     vectorIndexes: {};
   };
+  wordLists: {
+    document: {
+      createdAt: number;
+      deletionTime?: number;
+      description?: string;
+      name: string;
+      totalPracticeTime: number;
+      updatedAt: number;
+      userId: Id<"user">;
+      _id: Id<"wordLists">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "createdAt"
+      | "deletionTime"
+      | "description"
+      | "name"
+      | "totalPracticeTime"
+      | "updatedAt"
+      | "userId";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+      userId: ["userId", "_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
+  words: {
+    document: {
+      correctCount: number;
+      createdAt: number;
+      definition?: string;
+      deletionTime?: number;
+      difficulty: string;
+      example?: string;
+      incorrectCount: number;
+      lastPracticed?: number;
+      listId: Id<"wordLists">;
+      nextReview?: number;
+      streak: number;
+      updatedAt: number;
+      word: string;
+      _id: Id<"words">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "correctCount"
+      | "createdAt"
+      | "definition"
+      | "deletionTime"
+      | "difficulty"
+      | "example"
+      | "incorrectCount"
+      | "lastPracticed"
+      | "listId"
+      | "nextReview"
+      | "streak"
+      | "updatedAt"
+      | "word";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+      listId: ["listId", "_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
 };
 
 /**
