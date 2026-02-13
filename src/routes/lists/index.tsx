@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { Authenticated } from "better-convex/react";
 import {
@@ -21,6 +21,11 @@ import type { Word, WordList } from "@/types";
 
 export const Route = createFileRoute("/lists/")({
   component: ListsPage,
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({ to: "/auth" });
+    }
+  },
 });
 
 const listFormSchema = z.object({
