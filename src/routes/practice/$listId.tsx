@@ -3,6 +3,7 @@ import { useStore } from "@tanstack/react-store";
 import { useState } from "react";
 import { PracticeCard } from "@/components/practice/PracticeCard";
 import { ResultsScreen } from "@/components/practice/ResultsScreen";
+import { Spinner } from "@/components/ui/spinner";
 import { useKeyboardShortcuts } from "@/hooks/practice/useKeyboardShortcuts";
 import { usePracticeSession } from "@/hooks/practice/usePracticeSession";
 import { useSpeech } from "@/hooks/practice/useSpeech";
@@ -134,7 +135,7 @@ function PracticePage() {
     return (
       <div className="min-h-screen bg-black text-zinc-100 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          <Spinner className="w-8 h-8" />
         </div>
       </div>
     );

@@ -281,6 +281,59 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 - Avoid barrel files (index files that re-export everything)
 - Use proper image components (e.g., Next.js `<Image>`) over `<img>` tags
 
+### Loading States
+
+**NEVER use text with "..." for loading states.** Instead:
+
+1. **For Buttons**: Use the `loading` prop on the Button component
+   ```tsx
+   // ❌ DON'T
+   <Button disabled={isLoading}>
+     {isLoading ? "Loading..." : "Submit"}
+   </Button>
+   
+   // ✅ DO
+   <Button loading={isLoading}>
+     Submit
+   </Button>
+   ```
+
+2. **For Non-Button Loading**: Use the Spinner component
+   ```tsx
+   // ❌ DON'T
+   <span>Loading...</span>
+   <div>Signing in...</div>
+   <p>Creating account...</p>
+   
+   // ✅ DO
+   import { Spinner } from "@/components/ui/spinner";
+   
+   <Spinner />
+   <Spinner className="w-8 h-8" />
+   <div className="flex items-center gap-2">
+     <Spinner /> Loading
+   </div>
+   ```
+
+3. **For Pages/Sections**: Use Skeleton component
+   ```tsx
+   // ❌ DON'T
+   <div className="flex justify-center items-center min-h-screen">
+     <Spinner className="w-12 h-12" />
+   </div>
+   
+   // ✅ DO
+   import { Skeleton } from "@/components/ui/skeleton";
+   
+   <div className="space-y-4">
+     <Skeleton className="h-8 w-1/3" />
+     <Skeleton className="h-32 w-full" />
+     <Skeleton className="h-32 w-full" />
+   </div>
+   ```
+
+The Button component automatically shows a Spinner when `loading={true}` and disables itself. Never manually add "..." loading text.
+
 ### Framework-Specific Guidance
 
 **Next.js:**

@@ -4,6 +4,7 @@ import { useAuth } from "better-convex/react";
 import AuthAvatar from "@/components/auth/auth-avatar";
 import { useSignOutMutationOptions } from "@/lib/convex/auth/auth-mutations";
 import { Button } from "./ui/button";
+import { Spinner } from "./ui/spinner";
 
 export default function Header() {
   const signOut = useMutation(useSignOutMutationOptions());
@@ -36,23 +37,20 @@ export default function Header() {
               Lists
             </Link>
             {isLoading ? (
-              <span className="text-zinc-500">Loading...</span>
+              <Spinner className="text-zinc-500" />
             ) : isAuthenticated ? (
               <>
                 <Button
                   className="cursor-pointer font-mono disabled:cursor-not-allowed disabled:opacity-50"
-                  disabled={signOut.isPending}
+                  loading={signOut.isPending}
                   onClick={() => signOut.mutate()}
                 >
-                  {signOut.isPending ? "Signing out..." : "Sign out"}
+                  Sign out
                 </Button>
                 <AuthAvatar />
               </>
             ) : (
-              <Link
-                className="hover-underline font-mono"
-                to="/auth"
-              >
+              <Link className="hover-underline font-mono" to="/auth">
                 Sign in
               </Link>
             )}

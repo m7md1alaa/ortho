@@ -35,17 +35,17 @@ function ListDetailPage() {
 
   return (
     <div className="min-h-screen bg-black text-zinc-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <ListHeader
-          name={list.name}
           description={list.description}
+          name={list.name}
           onUpdate={(data) => updateWordList(listId, data)}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <Sidebar
-            list={list}
             isAdding={isAdding}
+            list={list}
             onAddToggle={() => setIsAdding(!isAdding)}
             onImportOpen={() => setIsImportModalOpen(true)}
             onWordAdd={(data) => {
@@ -60,18 +60,18 @@ function ListDetailPage() {
           />
 
           <WordsList
-            words={list.words}
-            onWordUpdate={(wordId, data) => updateWord(listId, wordId, data)}
             onWordDelete={(wordId) => deleteWord(listId, wordId)}
+            onWordUpdate={(wordId, data) => updateWord(listId, wordId, data)}
+            words={list.words}
           />
         </div>
       </div>
 
       <BulkImportModal
-        listId={listId}
-        isOpen={isImportModalOpen}
-        onClose={() => setIsImportModalOpen(false)}
         existingWords={list?.words.map((w) => w.word) || []}
+        isOpen={isImportModalOpen}
+        listId={listId}
+        onClose={() => setIsImportModalOpen(false)}
       />
     </div>
   );
@@ -98,30 +98,30 @@ function Sidebar({
   onWordAdd,
 }: SidebarProps) {
   return (
-    <div className="lg:col-span-1 space-y-6">
+    <div className="space-y-6 lg:col-span-1">
       <ListStats words={list.words} />
 
       <Link
-        to="/practice/$listId"
+        className="block w-full rounded-lg bg-zinc-100 px-4 py-3 text-center font-medium text-black transition-colors hover:bg-white"
         params={{ listId: list.id }}
-        className="block w-full px-4 py-3 bg-zinc-100 text-black text-center rounded-lg hover:bg-white transition-colors font-medium"
+        to="/practice/$listId"
       >
         Start Practice Session
       </Link>
 
       {isAdding ? (
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6">
-          <h3 className="text-lg font-semibold mb-4">Add New Word</h3>
-          <WordForm onSubmit={onWordAdd} onCancel={onAddToggle} />
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+          <h3 className="mb-4 font-semibold text-lg">Add New Word</h3>
+          <WordForm onCancel={onAddToggle} onSubmit={onWordAdd} />
         </div>
       ) : (
         <div className="space-y-3">
-          <Button onClick={onAddToggle} className="w-full" variant="secondary">
-            <Plus className="w-5 h-5" />
+          <Button className="w-full" onClick={onAddToggle} variant="secondary">
+            <Plus className="h-5 w-5" />
             Add Word
           </Button>
-          <Button onClick={onImportOpen} className="w-full" variant="outline">
-            <Upload className="w-5 h-5" />
+          <Button className="w-full" onClick={onImportOpen} variant="outline">
+            <Upload className="h-5 w-5" />
             Import Words
           </Button>
         </div>
@@ -134,7 +134,7 @@ interface WordListProps {
   words: WordList["words"];
   onWordUpdate: (
     wordId: string,
-    data: Partial<WordList["words"][number]>,
+    data: Partial<WordList["words"][number]>
   ) => void;
   onWordDelete: (wordId: string) => void;
 }
@@ -143,9 +143,9 @@ function WordsList({ words, onWordUpdate, onWordDelete }: WordListProps) {
   if (words.length === 0) {
     return (
       <div className="lg:col-span-2">
-        <div className="text-center py-16 bg-zinc-900/30 border border-zinc-800 rounded-xl">
-          <Brain className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-          <h3 className="text-xl font-medium text-zinc-300 mb-2">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
+          <Brain className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
+          <h3 className="mb-2 font-medium text-xl text-zinc-300">
             No words yet
           </h3>
           <p className="text-zinc-500">
@@ -161,11 +161,11 @@ function WordsList({ words, onWordUpdate, onWordDelete }: WordListProps) {
       <div className="space-y-3">
         {words.map((word, index) => (
           <WordCard
-            key={word.id}
-            word={word}
             index={index + 1}
-            onUpdate={onWordUpdate}
+            key={word.id}
             onDelete={() => onWordDelete(word.id)}
+            onUpdate={onWordUpdate}
+            word={word}
           />
         ))}
       </div>

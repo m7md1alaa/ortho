@@ -299,12 +299,11 @@ export default function AuthComponent() {
                 {({ canSubmit, isSubmitting }) => (
                   <Button
                     className="w-full"
-                    disabled={!canSubmit || isSubmitting || isLoading}
+                    disabled={!canSubmit}
+                    loading={isSubmitting || isLoading}
                     type="submit"
                   >
-                    {isSubmitting || isLoading
-                      ? "Creating account..."
-                      : "Continue"}
+                    Continue
                   </Button>
                 )}
               </signUpForm.Subscribe>
@@ -485,10 +484,11 @@ export default function AuthComponent() {
               {({ canSubmit, isSubmitting }) => (
                 <Button
                   className="w-full"
-                  disabled={!canSubmit || isSubmitting || isLoading}
+                  disabled={!canSubmit}
+                  loading={isSubmitting || isLoading}
                   type="submit"
                 >
-                  {isSubmitting || isLoading ? "Signing in..." : "Sign In"}
+                  Sign In
                 </Button>
               )}
             </signInForm.Subscribe>
