@@ -4,6 +4,7 @@ import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { createApi, createClient } from "better-convex/auth";
 import type { GenericCtx } from "../lib/crpc";
 import { internalMutationWithTriggers } from "../lib/crpc";
+import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from "../shared/validation";
 import { internal } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
@@ -48,6 +49,8 @@ export const createAuthOptions = (ctx: GenericCtx) =>
     },
     emailAndPassword: {
       enabled: true,
+      minPasswordLength: MIN_PASSWORD_LENGTH,
+      maxPasswordLength: MAX_PASSWORD_LENGTH,
     },
     socialProviders: {
       google: {

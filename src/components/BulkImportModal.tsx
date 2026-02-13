@@ -195,7 +195,7 @@ export function BulkImportModal({
           {/* Text Area */}
           <div className="relative">
             <Textarea
-              className="min-h-[200px] resize-none border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-500"
+              className="min-h-50 resize-none border-zinc-700 bg-zinc-800/50 text-zinc-100 placeholder:text-zinc-500"
               disabled={isImporting}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Paste words here, one per line...&#10;apple&#10;banana&#10;cherry"

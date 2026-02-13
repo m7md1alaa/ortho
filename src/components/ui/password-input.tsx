@@ -1,3 +1,4 @@
+import { MAX_PASSWORD_LENGTH } from "@convex/validation";
 import { zxcvbn, zxcvbnOptions } from "@zxcvbn-ts/core";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {
@@ -99,7 +100,7 @@ export function PasswordInputStrengthChecker() {
         zxcvbnOptions.setOptions({
           translations: english.translations,
           graphs: common.adjacencyGraphs,
-          maxLength: 50,
+          maxLength: MAX_PASSWORD_LENGTH,
           dictionary: {
             ...common.dictionary,
             ...english.dictionary,

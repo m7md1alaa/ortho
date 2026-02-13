@@ -15,7 +15,7 @@ import {
   useSignInSocialMutationOptions,
   useSignUpMutationOptions,
 } from "@/lib/convex/auth/auth-mutations";
-import { signInSchema, signUpSchema } from "./schema";
+import { signInSchema, signUpSchema } from "@/lib/validation/auth";
 
 type AuthMode = "signup" | "signin";
 
