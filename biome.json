@@ -1,10 +1,12 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+
   "vcs": {
     "enabled": false,
     "clientKind": "git",
     "useIgnoreFile": false
   },
+
   "files": {
     "ignoreUnknown": false,
     "includes": [
@@ -16,20 +18,109 @@
       "!**/src/styles.css"
     ]
   },
+
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true
     }
   },
+
   "javascript": {
     "formatter": {
       "quoteStyle": "double"
     }
-  }
+  },
+
+  "extends": [
+    "ultracite/biome/core",
+    "ultracite/biome/react",
+    "ultracite/biome/remix"
+  ],
+
+  "overrides": [
+    {
+      "includes": ["src/**/*.ts", "src/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "convex/values": {
+                    "importNames": ["ConvexError"],
+                    "message": "Use CRPCError from 'better-convex/crpc' instead."
+                  },
+                  "convex/react": "Use useCRPC from '@/lib/convex/crpc' instead.",
+                  "convex/nextjs": "Use caller from '@/lib/convex/rsc' instead."
+                },
+                "patterns": [
+                  {
+                    "group": ["**/../convex/**"],
+                    "message": "Use @convex/* alias instead of relative convex imports."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "includes": ["convex/**/*.ts", "convex/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@/*", "**/src/**"],
+                    "message": "Convex files cannot import from src/."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    {
+      "includes": ["convex/shared/**/*.ts", "convex/shared/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/convex/lib/**"],
+                    "message": "convex/shared cannot import from convex/lib."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
