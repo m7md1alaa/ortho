@@ -1,4 +1,4 @@
-import type { Doc } from "@convex/dataModel";
+import type { Id } from "@convex/dataModel";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
@@ -16,12 +16,20 @@ import { getSessionToken } from "@/lib/convex/getSessionToken";
 import Header from "../components/Header";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
+
+export interface CurrentUser {
+  id: Id<"user">;
+  email: string;
+  image?: string | null;
+  name: string;
+}
+
 export interface MyRouterContext {
   convex: ConvexReactClient;
   queryClient: QueryClient;
   convexQueryClient: ConvexQueryClient;
   isAuthenticated: boolean;
-  currentUser: Doc<"user"> | null;
+  currentUser: CurrentUser | null;
   token: string | null;
 }
 
@@ -60,11 +68,18 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   beforeLoad: async (ctx) => {
-    const token = await getSessionToken(); // a server function that calls the getToken function in auth-server.ts and returns the token
+    const token = await getSessionToken();
     if (token) {
       ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
     }
-    const currentUser = token ? await getCurrentUser() : null;
+    let currentUser: CurrentUser | null = null;
+    if (token) {
+      try {
+        currentUser = await getCurrentUser();
+      } catch {
+        // Error fetching user, will be handled client-side
+      }
+    }
     return {
       isAuthenticated: !!token && !!currentUser,
       currentUser,

@@ -6,6 +6,43 @@ import { useSignOutMutationOptions } from "@/lib/convex/auth/auth-mutations";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 
+interface AuthSectionProps {
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  signOut: ReturnType<typeof useMutation>;
+}
+
+function renderAuthSection({
+  isLoading,
+  isAuthenticated,
+  signOut,
+}: AuthSectionProps) {
+  if (isLoading) {
+    return <Spinner className="text-zinc-500" />;
+  }
+
+  if (isAuthenticated) {
+    return (
+      <>
+        <Button
+          className="cursor-pointer font-mono disabled:cursor-not-allowed disabled:opacity-50"
+          loading={signOut.isPending}
+          onClick={() => signOut.mutate(undefined)}
+        >
+          Sign out
+        </Button>
+        <AuthAvatar />
+      </>
+    );
+  }
+
+  return (
+    <Link className="hover-underline font-mono" to="/auth">
+      Sign in
+    </Link>
+  );
+}
+
 export default function Header() {
   const signOut = useMutation(useSignOutMutationOptions());
   const { isAuthenticated, isLoading } = useAuth();
@@ -36,24 +73,7 @@ export default function Header() {
             >
               Lists
             </Link>
-            {isLoading ? (
-              <Spinner className="text-zinc-500" />
-            ) : isAuthenticated ? (
-              <>
-                <Button
-                  className="cursor-pointer font-mono disabled:cursor-not-allowed disabled:opacity-50"
-                  loading={signOut.isPending}
-                  onClick={() => signOut.mutate()}
-                >
-                  Sign out
-                </Button>
-                <AuthAvatar />
-              </>
-            ) : (
-              <Link className="hover-underline font-mono" to="/auth">
-                Sign in
-              </Link>
-            )}
+            {renderAuthSection({ isLoading, isAuthenticated, signOut })}
           </nav>
         </div>
       </div>

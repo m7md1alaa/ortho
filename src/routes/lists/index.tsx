@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import { Authenticated } from "better-convex/react";
+import { Authenticated, useAuth } from "better-convex/react";
 import {
   ArrowRight,
   BookOpen,
@@ -10,7 +10,7 @@ import {
   Target,
   Trash2,
 } from "lucide-react";
-import { useId } from "react";
+import { useEffect, useId } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,11 +21,6 @@ import type { Word, WordList } from "@/types";
 
 export const Route = createFileRoute("/lists/")({
   component: ListsPage,
-  beforeLoad: ({ context }) => {
-    if (!context.isAuthenticated) {
-      throw redirect({ to: "/auth" });
-    }
-  },
 });
 
 const listFormSchema = z.object({
@@ -34,9 +29,17 @@ const listFormSchema = z.object({
 });
 
 function ListsPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading } = useAuth();
   const wordLists = useStore(store, (state) => state.wordLists);
   const nameId = useId();
   const descriptionId = useId();
+
+  useEffect(() => {
+    if (!(isLoading || isAuthenticated)) {
+      navigate({ to: "/auth" });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   const form = useForm({
     defaultValues: {
