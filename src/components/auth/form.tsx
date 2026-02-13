@@ -5,6 +5,7 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { APP_NAME } from "@/lib/constants";
 import {
   useSignInMutationOptions,
   useSignInSocialMutationOptions,
@@ -116,7 +117,7 @@ export default function AuthComponent() {
                 <GalleryVerticalEnd />
               </a>
               <h1 className="mt-4 mb-1 font-semibold text-xl">
-                Create a ortho Account
+                Create a {APP_NAME} Account
               </h1>
               <p className="text-sm">
                 Welcome! Create an account to get started
@@ -345,7 +346,7 @@ export default function AuthComponent() {
               <GalleryVerticalEnd />
             </a>
             <h1 className="mt-4 mb-1 font-semibold text-xl">
-              Sign In to Tailark
+              Sign In to {APP_NAME}
             </h1>
             <p className="text-sm">Welcome back! Sign in to continue</p>
           </div>

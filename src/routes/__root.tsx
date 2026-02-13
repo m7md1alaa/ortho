@@ -9,6 +9,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import type { ConvexQueryClient, ConvexReactClient } from "better-convex/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 import { BetterConvexProvider } from "@/lib/convex/convex-provider";
 import { getCurrentUser } from "@/lib/convex/getCurrentUser";
 import { getSessionToken } from "@/lib/convex/getSessionToken";
@@ -35,7 +36,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Ortho — Spelling as Craft",
+        title: `${APP_NAME} — ${APP_TAGLINE}`,
       },
     ],
     links: [
