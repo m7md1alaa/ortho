@@ -1,8 +1,7 @@
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+import { useRouter, useSearch } from "@tanstack/react-router";
 import { GalleryVerticalEnd } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,8 +15,17 @@ import { signInSchema, signUpSchema } from "./schema";
 type AuthMode = "signup" | "signin";
 
 export default function AuthComponent() {
-  const [mode, setMode] = useState<AuthMode>("signup");
   const router = useRouter();
+  const search = useSearch({ from: "/auth" });
+  const mode = (search.mode as AuthMode) || "signup";
+
+  const setMode = (newMode: AuthMode) => {
+    router.navigate({
+      to: "/auth",
+      search: { mode: newMode },
+      replace: true,
+    });
+  };
 
   const signIn = useMutation(
     useSignInMutationOptions({
