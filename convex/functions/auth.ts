@@ -20,7 +20,7 @@ export const authClient = createClient<DataModel, typeof schema>({
     user: {
       beforeCreate: async (_ctx: GenericCtx, data) => {
         const username =
-          data.name?.trim() ||
+          data.username?.trim() ||
           data.email?.split("@")[0] ||
           `user-${Date.now()}`;
         return await { ...data, username };
@@ -45,6 +45,9 @@ export const createAuthOptions = (ctx: GenericCtx) =>
     session: {
       expiresIn: 60 * 60 * 24 * 30,
       updateAge: 60 * 60 * 24 * 15,
+    },
+    emailAndPassword: {
+      enabled: true,
     },
     socialProviders: {
       google: {

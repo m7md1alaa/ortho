@@ -128,6 +128,7 @@ export type DataModel = {
       image?: string;
       name: string;
       updatedAt: number;
+      username?: string;
       _id: Id<"user">;
       _creationTime: number;
     };
@@ -139,7 +140,8 @@ export type DataModel = {
       | "emailVerified"
       | "image"
       | "name"
-      | "updatedAt";
+      | "updatedAt"
+      | "username";
     indexes: {
       by_id: ["_id"];
       by_creation_time: ["_creationTime"];

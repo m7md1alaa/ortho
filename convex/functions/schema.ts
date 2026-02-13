@@ -7,6 +7,7 @@ const schema = defineEntSchema({
     email: v.string(),
     emailVerified: v.boolean(),
     image: v.optional(v.string()),
+    username: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
