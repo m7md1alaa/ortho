@@ -27,18 +27,149 @@ import type { GenericId } from "convex/values";
  */
 
 export type DataModel = {
+  account: {
+    document: {
+      accessToken?: string;
+      accessTokenExpiresAt?: number;
+      accountId: string;
+      createdAt: number;
+      idToken?: string;
+      password?: string;
+      providerId: string;
+      refreshToken?: string;
+      refreshTokenExpiresAt?: number;
+      scope?: string;
+      updatedAt: number;
+      userId: Id<"user">;
+      _id: Id<"account">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "accessToken"
+      | "accessTokenExpiresAt"
+      | "accountId"
+      | "createdAt"
+      | "idToken"
+      | "password"
+      | "providerId"
+      | "refreshToken"
+      | "refreshTokenExpiresAt"
+      | "scope"
+      | "updatedAt"
+      | "userId";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+      accountId: ["accountId", "_creationTime"];
+      userId: ["userId", "_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
+  jwks: {
+    document: {
+      createdAt: number;
+      privateKey: string;
+      publicKey: string;
+      _id: Id<"jwks">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "createdAt"
+      | "privateKey"
+      | "publicKey";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
+  session: {
+    document: {
+      createdAt: number;
+      expiresAt: number;
+      ipAddress?: string;
+      token: string;
+      updatedAt: number;
+      userAgent?: string;
+      userId: Id<"user">;
+      _id: Id<"session">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "createdAt"
+      | "expiresAt"
+      | "ipAddress"
+      | "token"
+      | "updatedAt"
+      | "userAgent"
+      | "userId";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+      token: ["token", "_creationTime"];
+      userId: ["userId", "_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
   user: {
     document: {
+      createdAt: number;
       email: string;
+      emailVerified: boolean;
+      image?: string;
       name: string;
+      updatedAt: number;
       _id: Id<"user">;
       _creationTime: number;
     };
-    fieldPaths: "_creationTime" | "_id" | "email" | "name";
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "createdAt"
+      | "email"
+      | "emailVerified"
+      | "image"
+      | "name"
+      | "updatedAt";
     indexes: {
       by_id: ["_id"];
       by_creation_time: ["_creationTime"];
       email: ["email", "_creationTime"];
+    };
+    searchIndexes: {};
+    vectorIndexes: {};
+  };
+  verification: {
+    document: {
+      createdAt?: number;
+      expiresAt: number;
+      identifier: string;
+      updatedAt?: number;
+      value: string;
+      _id: Id<"verification">;
+      _creationTime: number;
+    };
+    fieldPaths:
+      | "_creationTime"
+      | "_id"
+      | "createdAt"
+      | "expiresAt"
+      | "identifier"
+      | "updatedAt"
+      | "value";
+    indexes: {
+      by_id: ["_id"];
+      by_creation_time: ["_creationTime"];
+      identifier: ["identifier", "_creationTime"];
     };
     searchIndexes: {};
     vectorIndexes: {};

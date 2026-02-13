@@ -1,8 +1,8 @@
-import type { GenericEnt, GenericEntWriter } from 'convex-ents';
-import { entsTableFactory, getEntDefinitions } from 'convex-ents';
-import type { TableNames } from '../functions/_generated/dataModel';
-import type { MutationCtx, QueryCtx } from '../functions/_generated/server';
-import schema from '../functions/schema';
+import type { GenericEnt, GenericEntWriter } from "convex-ents";
+import { entsTableFactory, getEntDefinitions } from "convex-ents";
+import type { TableNames } from "../functions/_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "../functions/_generated/server";
+import schema from "../functions/schema";
 
 export const entDefinitions = getEntDefinitions(schema);
 
@@ -16,7 +16,12 @@ export type EntWriter<TableName extends TableNames> = GenericEntWriter<
   TableName
 >;
 
-export const getCtxWithTable = <Ctx extends MutationCtx | QueryCtx>(ctx: Ctx) => ({
+export type CtxWithTable<Ctx extends MutationCtx | QueryCtx = QueryCtx> =
+  ReturnType<typeof getCtxWithTable<Ctx>>;
+
+export const getCtxWithTable = <Ctx extends MutationCtx | QueryCtx>(
+  ctx: Ctx
+) => ({
   ...ctx,
   table: entsTableFactory(ctx, entDefinitions),
 });

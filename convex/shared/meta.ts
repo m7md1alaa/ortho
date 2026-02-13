@@ -3,6 +3,9 @@
 // Do not edit manually. Run `better-convex codegen` to regenerate.
 
 export const meta = {
+  user: {
+    getSessionUser: { auth: 'required', type: 'query' },
+  },
   _http: {},
 } as const;
 
