@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ListsIndexRouteImport } from './routes/lists/index'
 import { Route as PracticeListIdRouteImport } from './routes/practice/$listId'
 import { Route as ListsListIdRouteImport } from './routes/lists/$listId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
   '/lists/': typeof ListsIndexRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
   '/lists': typeof ListsIndexRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
   '/lists/': typeof ListsIndexRoute
@@ -67,15 +76,23 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/lists/$listId'
     | '/practice/$listId'
     | '/lists/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lists/$listId' | '/practice/$listId' | '/lists' | '/api/auth/$'
+  to:
+    | '/'
+    | '/auth'
+    | '/lists/$listId'
+    | '/practice/$listId'
+    | '/lists'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/lists/$listId'
     | '/practice/$listId'
     | '/lists/'
@@ -84,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   ListsListIdRoute: typeof ListsListIdRoute
   PracticeListIdRoute: typeof PracticeListIdRoute
   ListsIndexRoute: typeof ListsIndexRoute
@@ -92,6 +110,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -132,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   ListsListIdRoute: ListsListIdRoute,
   PracticeListIdRoute: PracticeListIdRoute,
   ListsIndexRoute: ListsIndexRoute,

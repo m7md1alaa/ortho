@@ -1,3 +1,4 @@
+import type { Doc } from "@convex/dataModel";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import {
@@ -18,6 +19,9 @@ export interface MyRouterContext {
   convex: ConvexReactClient;
   queryClient: QueryClient;
   convexQueryClient: ConvexQueryClient;
+  isAuthenticated: boolean;
+  currentUser: Doc<"user"> | null;
+  token: string | null;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({

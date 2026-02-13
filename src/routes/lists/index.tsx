@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
+import { Authenticated } from "better-convex/react";
 import {
   ArrowRight,
   BookOpen,
@@ -40,7 +41,7 @@ function ListsPage() {
     validators: {
       onSubmit: listFormSchema,
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       addWordList({
         name: value.name,
         description: value.description,
@@ -52,101 +53,105 @@ function ListsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-black text-zinc-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">Word Lists</h1>
-          <p className="text-zinc-400 text-lg">
-            Create and manage your spelling practice lists
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 sticky top-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Plus className="w-5 h-5" />
-                Create New List
-              </h2>
-
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  form.handleSubmit();
-                }}
-                className="space-y-4"
-              >
-                <form.Field name="name">
-                  {(field) => (
-                    <div className="space-y-2">
-                      <Label htmlFor={nameId}>List Name</Label>
-                      <Input
-                        id={nameId}
-                        type="text"
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder="e.g., GRE Vocabulary"
-                      />
-                      {field.state.meta.errors.length > 0 && (
-                        <p className="text-sm text-destructive">
-                          {field.state.meta.errors[0]?.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </form.Field>
-
-                <form.Field name="description">
-                  {(field) => (
-                    <div className="space-y-2">
-                      <Label htmlFor={descriptionId}>
-                        Description (optional)
-                      </Label>
-                      <Textarea
-                        id={descriptionId}
-                        value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder="Brief description of this list..."
-                        rows={3}
-                      />
-                    </div>
-                  )}
-                </form.Field>
-
-                <Button
-                  type="submit"
-                  disabled={form.state.isSubmitting}
-                  className="w-full"
-                >
-                  Create List
-                </Button>
-              </form>
-            </div>
+    <Authenticated>
+      <div className="min-h-screen bg-black text-zinc-100">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mb-12">
+            <h1 className="mb-4 font-bold text-4xl tracking-tight">
+              Word Lists
+            </h1>
+            <p className="text-lg text-zinc-400">
+              Create and manage your spelling practice lists
+            </p>
           </div>
 
-          <div className="lg:col-span-2">
-            {wordLists.length === 0 ? (
-              <div className="text-center py-16 bg-zinc-900/30 border border-zinc-800 rounded-xl">
-                <BookOpen className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-zinc-300 mb-2">
-                  No lists yet
-                </h3>
-                <p className="text-zinc-500">
-                  Create your first word list to start practicing
-                </p>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="lg:col-span-1">
+              <div className="sticky top-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+                <h2 className="mb-4 flex items-center gap-2 font-semibold text-lg">
+                  <Plus className="h-5 w-5" />
+                  Create New List
+                </h2>
+
+                <form
+                  className="space-y-4"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    form.handleSubmit();
+                  }}
+                >
+                  <form.Field name="name">
+                    {(field) => (
+                      <div className="space-y-2">
+                        <Label htmlFor={nameId}>List Name</Label>
+                        <Input
+                          id={nameId}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          placeholder="e.g., GRE Vocabulary"
+                          type="text"
+                          value={field.state.value}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                          <p className="text-destructive text-sm">
+                            {field.state.meta.errors[0]?.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </form.Field>
+
+                  <form.Field name="description">
+                    {(field) => (
+                      <div className="space-y-2">
+                        <Label htmlFor={descriptionId}>
+                          Description (optional)
+                        </Label>
+                        <Textarea
+                          id={descriptionId}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          placeholder="Brief description of this list..."
+                          rows={3}
+                          value={field.state.value}
+                        />
+                      </div>
+                    )}
+                  </form.Field>
+
+                  <Button
+                    className="w-full"
+                    disabled={form.state.isSubmitting}
+                    type="submit"
+                  >
+                    Create List
+                  </Button>
+                </form>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {wordLists.map((list) => (
-                  <ListCard key={list.id} list={list} />
-                ))}
-              </div>
-            )}
+            </div>
+
+            <div className="lg:col-span-2">
+              {wordLists.length === 0 ? (
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
+                  <BookOpen className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
+                  <h3 className="mb-2 font-medium text-xl text-zinc-300">
+                    No lists yet
+                  </h3>
+                  <p className="text-zinc-500">
+                    Create your first word list to start practicing
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {wordLists.map((list) => (
+                    <ListCard key={list.id} list={list} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Authenticated>
   );
 }
 
@@ -158,76 +163,76 @@ function ListCard({ list }: { list: WordList }) {
       ? Math.round(
           (list.words.reduce(
             (acc: number, w: Word) => acc + w.correctCount,
-            0,
+            0
           ) /
             Math.max(
               list.words.reduce(
                 (acc: number, w: Word) =>
                   acc + w.correctCount + w.incorrectCount,
-                0,
+                0
               ),
-              1,
+              1
             )) *
-            100,
+            100
         )
       : 0;
 
   return (
-    <div className="group bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 hover:border-zinc-700 transition-all">
-      <div className="flex items-start justify-between mb-4">
+    <div className="group rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700">
+      <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
           <Link
-            to="/lists/$listId"
+            className="font-semibold text-xl text-zinc-100 transition-colors hover:text-white"
             params={{ listId: list.id }}
-            className="text-xl font-semibold text-zinc-100 hover:text-white transition-colors"
+            to="/lists/$listId"
           >
             {list.name}
           </Link>
           {list.description && (
-            <p className="text-zinc-500 mt-1 text-sm">{list.description}</p>
+            <p className="mt-1 text-sm text-zinc-500">{list.description}</p>
           )}
         </div>
         <Button
-          variant="ghost"
-          size="icon-sm"
+          className="opacity-0 hover:text-destructive group-hover:opacity-100"
           onClick={() => deleteWordList(list.id)}
-          className="opacity-0 group-hover:opacity-100 hover:text-destructive"
+          size="icon-sm"
           title="Delete list"
+          variant="ghost"
         >
-          <Trash2 className="w-5 h-5" />
+          <Trash2 className="h-5 w-5" />
         </Button>
       </div>
 
-      <div className="flex items-center gap-6 text-sm text-zinc-500 mb-4">
+      <div className="mb-4 flex items-center gap-6 text-sm text-zinc-500">
         <div className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4" />
+          <BookOpen className="h-4 w-4" />
           <span>{totalWords} words</span>
         </div>
         <div className="flex items-center gap-2">
-          <Target className="w-4 h-4" />
+          <Target className="h-4 w-4" />
           <span>{masteredWords} mastered</span>
         </div>
         <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4" />
+          <Clock className="h-4 w-4" />
           <span>{accuracy}% accuracy</span>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
         <Link
-          to="/lists/$listId"
+          className="flex-1 rounded-lg bg-zinc-800 px-4 py-2 text-center font-medium text-sm text-zinc-300 transition-colors hover:bg-zinc-700"
           params={{ listId: list.id }}
-          className="flex-1 px-4 py-2 bg-zinc-800 text-zinc-300 text-center rounded-lg hover:bg-zinc-700 transition-colors text-sm font-medium"
+          to="/lists/$listId"
         >
           Edit Words
         </Link>
         <Link
-          to="/practice/$listId"
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 text-center font-medium text-black text-sm transition-colors hover:bg-white"
           params={{ listId: list.id }}
-          className="flex-1 px-4 py-2 bg-zinc-100 text-black text-center rounded-lg hover:bg-white transition-colors text-sm font-medium flex items-center justify-center gap-2"
+          to="/practice/$listId"
         >
           Practice
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
     </div>
