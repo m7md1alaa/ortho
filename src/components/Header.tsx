@@ -69,6 +69,13 @@ export default function Header() {
             <Link
               activeProps={{ className: "text-[#f5f5f0]" }}
               className="hover-underline font-mono"
+              to="/discover"
+            >
+              Discover
+            </Link>
+            <Link
+              activeProps={{ className: "text-[#f5f5f0]" }}
+              className="hover-underline font-mono"
               to="/lists"
             >
               Lists

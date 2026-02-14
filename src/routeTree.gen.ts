@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ListsIndexRouteImport } from './routes/lists/index'
+import { Route as DiscoverIndexRouteImport } from './routes/discover/index'
 import { Route as PracticeListIdRouteImport } from './routes/practice/$listId'
 import { Route as ListsListIdRouteImport } from './routes/lists/$listId'
+import { Route as DiscoverListIdRouteImport } from './routes/discover/$listId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
 const AuthRoute = AuthRouteImport.update({
@@ -31,6 +33,11 @@ const ListsIndexRoute = ListsIndexRouteImport.update({
   path: '/lists/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiscoverIndexRoute = DiscoverIndexRouteImport.update({
+  id: '/discover/',
+  path: '/discover/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PracticeListIdRoute = PracticeListIdRouteImport.update({
   id: '/practice/$listId',
   path: '/practice/$listId',
@@ -39,6 +46,11 @@ const PracticeListIdRoute = PracticeListIdRouteImport.update({
 const ListsListIdRoute = ListsListIdRouteImport.update({
   id: '/lists/$listId',
   path: '/lists/$listId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiscoverListIdRoute = DiscoverListIdRouteImport.update({
+  id: '/discover/$listId',
+  path: '/discover/$listId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -50,16 +62,20 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/discover/$listId': typeof DiscoverListIdRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
+  '/discover/': typeof DiscoverIndexRoute
   '/lists/': typeof ListsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/discover/$listId': typeof DiscoverListIdRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
+  '/discover': typeof DiscoverIndexRoute
   '/lists': typeof ListsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -67,8 +83,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/discover/$listId': typeof DiscoverListIdRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
+  '/discover/': typeof DiscoverIndexRoute
   '/lists/': typeof ListsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -77,24 +95,30 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/discover/$listId'
     | '/lists/$listId'
     | '/practice/$listId'
+    | '/discover/'
     | '/lists/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/discover/$listId'
     | '/lists/$listId'
     | '/practice/$listId'
+    | '/discover'
     | '/lists'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/auth'
+    | '/discover/$listId'
     | '/lists/$listId'
     | '/practice/$listId'
+    | '/discover/'
     | '/lists/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -102,8 +126,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  DiscoverListIdRoute: typeof DiscoverListIdRoute
   ListsListIdRoute: typeof ListsListIdRoute
   PracticeListIdRoute: typeof PracticeListIdRoute
+  DiscoverIndexRoute: typeof DiscoverIndexRoute
   ListsIndexRoute: typeof ListsIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -131,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/discover/': {
+      id: '/discover/'
+      path: '/discover'
+      fullPath: '/discover/'
+      preLoaderRoute: typeof DiscoverIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/practice/$listId': {
       id: '/practice/$listId'
       path: '/practice/$listId'
@@ -143,6 +176,13 @@ declare module '@tanstack/react-router' {
       path: '/lists/$listId'
       fullPath: '/lists/$listId'
       preLoaderRoute: typeof ListsListIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover/$listId': {
+      id: '/discover/$listId'
+      path: '/discover/$listId'
+      fullPath: '/discover/$listId'
+      preLoaderRoute: typeof DiscoverListIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -158,8 +198,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  DiscoverListIdRoute: DiscoverListIdRoute,
   ListsListIdRoute: ListsListIdRoute,
   PracticeListIdRoute: PracticeListIdRoute,
+  DiscoverIndexRoute: DiscoverIndexRoute,
   ListsIndexRoute: ListsIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
