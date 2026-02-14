@@ -222,7 +222,7 @@ function SelectItem({
       <SelectPrimitive.ItemIndicator
         render={
           <span className="absolute right-3 flex items-center justify-center">
-            <CheckIcon className="size-[18px] stroke-[2.5] text-accent" />
+            <CheckIcon className="size-4.5 stroke-[2.5] text-accent" />
           </span>
         }
       />
@@ -257,7 +257,7 @@ function SelectScrollUpButton({
       className={cn(
         "sticky top-0 z-10 flex items-center justify-center",
         "h-8 w-full cursor-default",
-        "bg-gradient-to-b from-bg-secondary via-bg-secondary to-transparent",
+        "bg-linear-to-b from-bg-secondary via-bg-secondary to-transparent",
         "text-text-secondary",
         "[&_svg:not([class*='size-'])]:size-4",
         className

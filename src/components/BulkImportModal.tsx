@@ -1,3 +1,4 @@
+import type { ApiOutputs } from "@convex/types";
 import { AlertCircle, CheckCircle, FileUp, Upload, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { addWordsBulk, type BulkImportResult } from "@/store";
 
 const MAX_WORDS = 300;
 
@@ -22,21 +22,25 @@ const BULLET_LIST_REGEX = /^[-•*]\s*/;
 const MULTIPLE_SPACES_REGEX = /\s+/g;
 
 interface BulkImportModalProps {
-  listId: string;
   isOpen: boolean;
   onClose: () => void;
   existingWords: string[];
+  onImport: (
+    words: Array<{ word: string }>
+  ) => Promise<ApiOutputs["words"]["bulkImportWords"]>;
 }
 
 export function BulkImportModal({
-  listId,
   isOpen,
   onClose,
   existingWords,
+  onImport,
 }: BulkImportModalProps) {
   const [inputText, setInputText] = useState("");
   const [isImporting, setIsImporting] = useState(false);
-  const [result, setResult] = useState<BulkImportResult | null>(null);
+  const [result, setResult] = useState<
+    ApiOutputs["words"]["bulkImportWords"] | null
+  >(null);
 
   const parsedWords = useMemo(() => {
     if (!inputText.trim()) {
@@ -66,7 +70,7 @@ export function BulkImportModal({
   const newWordsCount = parsedWords.length - duplicateCount;
   const isOverLimit = parsedWords.length >= MAX_WORDS;
 
-  const handleImport = () => {
+  const handleImport = async () => {
     if (parsedWords.length === 0) {
       return;
     }
@@ -74,7 +78,7 @@ export function BulkImportModal({
     setIsImporting(true);
 
     const wordsToImport = parsedWords.map((word) => ({ word }));
-    const importResult = addWordsBulk(listId, wordsToImport);
+    const importResult = await onImport(wordsToImport);
 
     setResult(importResult);
     setIsImporting(false);
@@ -109,13 +113,13 @@ export function BulkImportModal({
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-lg bg-zinc-800/50 p-4 text-center">
                 <div className="font-bold text-3xl text-green-400">
-                  {result.added}
+                  {result.count}
                 </div>
                 <div className="mt-1 text-sm text-zinc-400">Words Added</div>
               </div>
               <div className="rounded-lg bg-zinc-800/50 p-4 text-center">
                 <div className="font-bold text-3xl text-yellow-400">
-                  {result.skipped}
+                  {duplicateCount}
                 </div>
                 <div className="mt-1 text-sm text-zinc-400">
                   Duplicates Skipped
@@ -132,7 +136,7 @@ export function BulkImportModal({
             >
               Done
             </Button>
-            {result.added > 0 && (
+            {result.count > 0 && (
               <Button
                 className="flex-1 bg-zinc-100 text-black hover:bg-white"
                 onClick={handleReset}
@@ -263,7 +267,8 @@ export function BulkImportModal({
             onClick={handleImport}
           >
             <FileUp className="mr-2 h-4 w-4" />
-            Import {newWordsCount > 0 && `${newWordsCount} `}Words
+            Import {newWordsCount > 0 && `${newWordsCount} `}
+            Words
           </Button>
         </DialogFooter>
       </DialogContent>

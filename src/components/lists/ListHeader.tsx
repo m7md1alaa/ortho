@@ -28,18 +28,18 @@ export function ListHeader({ name, description, onUpdate }: ListHeaderProps) {
   return (
     <div className="mb-8">
       <Link
+        className="mb-4 inline-flex items-center gap-2 text-zinc-500 transition-colors hover:text-zinc-300"
         to="/lists"
-        className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-300 transition-colors mb-4"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="h-4 w-4" />
         Back to lists
       </Link>
       <div className="group">
         {isEditing ? (
           <div className="space-y-3">
             <input
-              type="text"
-              value={editName}
+              autoFocus
+              className="w-full font-bold text-4xl text-zinc-100 tracking-tight placeholder:text-zinc-600 focus:border-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               onChange={(e) => setEditName(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -49,20 +49,19 @@ export function ListHeader({ name, description, onUpdate }: ListHeaderProps) {
                   handleCancel();
                 }
               }}
+              placeholder="List name"
               style={{
                 border: "none",
                 outline: "none",
                 boxShadow: "none",
                 background: "transparent",
               }}
-              className="w-full text-4xl font-bold tracking-tight text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0"
-              placeholder="List name"
+              type="text"
               // biome-ignore lint/a11y/noAutofocus: Edit mode needs focus
-              autoFocus
+              value={editName}
             />
             <input
-              type="text"
-              value={editDescription}
+              className="w-full text-lg text-zinc-400 placeholder:text-zinc-600 focus:border-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
               onChange={(e) => setEditDescription(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -72,41 +71,42 @@ export function ListHeader({ name, description, onUpdate }: ListHeaderProps) {
                   handleCancel();
                 }
               }}
+              placeholder="Description (optional)"
               style={{
                 border: "none",
                 outline: "none",
                 boxShadow: "none",
                 background: "transparent",
               }}
-              className="w-full text-lg text-zinc-400 placeholder:text-zinc-600 focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0"
-              placeholder="Description (optional)"
+              type="text"
+              value={editDescription}
             />
             <div className="flex gap-2 pt-2">
-              <Button size="sm" onClick={handleSave}>
-                <CheckCircle className="w-4 h-4 mr-1" />
+              <Button onClick={handleSave} size="sm">
+                <CheckCircle className="mr-1 h-4 w-4" />
                 Save
               </Button>
-              <Button size="sm" variant="ghost" onClick={handleCancel}>
+              <Button onClick={handleCancel} size="sm" variant="ghost">
                 Cancel
               </Button>
             </div>
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-4xl font-bold tracking-tight">{name}</h1>
+            <div className="mb-2 flex items-center gap-3">
+              <h1 className="font-bold text-4xl tracking-tight">{name}</h1>
               <Button
-                variant="ghost"
-                size="icon-sm"
+                className="opacity-0 transition-opacity group-hover:opacity-100"
                 onClick={startEditing}
-                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                size="icon-sm"
                 title="Edit list"
+                variant="ghost"
               >
-                <Edit2 className="w-5 h-5" />
+                <Edit2 className="h-5 w-5" />
               </Button>
             </div>
             {description && (
-              <p className="text-zinc-400 text-lg">{description}</p>
+              <p className="text-lg text-zinc-400">{description}</p>
             )}
           </>
         )}
