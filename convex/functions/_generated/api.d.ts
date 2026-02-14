@@ -25,7 +25,7 @@ export declare const api: {
       "query",
       "public",
       {},
-      { email: string; id: any; image?: string | null; name: string }
+      { email: string; id: Id<"user">; image?: string | null; name: string }
     >;
   };
   wordLists: {
@@ -33,22 +33,22 @@ export declare const api: {
       "mutation",
       "public",
       { description?: string; name: string },
-      { id: any }
+      { id: Id<"wordLists"> }
     >;
     deleteList: FunctionReference<
       "mutation",
       "public",
-      { listId: any },
+      { listId: Id<"wordLists"> },
       { success: true }
     >;
     getListById: FunctionReference<
       "query",
       "public",
-      { listId: any },
+      { listId: Id<"wordLists"> },
       {
         createdAt: number;
         description?: string;
-        id: any;
+        id: Id<"wordLists">;
         name: string;
         totalPracticeTime: number;
         updatedAt: number;
@@ -58,7 +58,7 @@ export declare const api: {
           definition?: string;
           difficulty: "easy" | "medium" | "hard";
           example?: string;
-          id: any;
+          id: Id<"words">;
           incorrectCount: number;
           lastPracticed?: number;
           nextReview?: number;
@@ -75,7 +75,7 @@ export declare const api: {
       Array<{
         createdAt: number;
         description?: string;
-        id: any;
+        id: Id<"wordLists">;
         name: string;
         totalPracticeTime: number;
         updatedAt: number;
@@ -85,13 +85,13 @@ export declare const api: {
     restoreList: FunctionReference<
       "mutation",
       "public",
-      { listId: any },
+      { listId: Id<"wordLists"> },
       { success: true }
     >;
     updateList: FunctionReference<
       "mutation",
       "public",
-      { description?: string; listId: any; name?: string },
+      { description?: string; listId: Id<"wordLists">; name?: string },
       { success: true }
     >;
   };
@@ -103,16 +103,16 @@ export declare const api: {
         definition?: string;
         difficulty: "easy" | "medium" | "hard";
         example?: string;
-        listId: any;
+        listId: Id<"wordLists">;
         word: string;
       },
-      { id: any }
+      { id: Id<"words"> }
     >;
     bulkImportWords: FunctionReference<
       "mutation",
       "public",
       {
-        listId: any;
+        listId: Id<"wordLists">;
         words: Array<{
           definition?: string;
           difficulty: "easy" | "medium" | "hard";
@@ -125,20 +125,20 @@ export declare const api: {
     deleteWord: FunctionReference<
       "mutation",
       "public",
-      { wordId: any },
+      { wordId: Id<"words"> },
       { success: true }
     >;
     getWordsByListId: FunctionReference<
       "query",
       "public",
-      { listId: any },
+      { listId: Id<"wordLists"> },
       Array<{
         correctCount: number;
         createdAt: number;
         definition?: string;
         difficulty: "easy" | "medium" | "hard";
         example?: string;
-        id: any;
+        id: Id<"words">;
         incorrectCount: number;
         lastPracticed?: number;
         nextReview?: number;
@@ -150,19 +150,19 @@ export declare const api: {
     recordPractice: FunctionReference<
       "mutation",
       "public",
-      { correct: boolean; timeSpent: number; wordId: any },
+      { correct: boolean; timeSpent: number; wordId: Id<"words"> },
       { nextReview?: number; streak: number; success: true }
     >;
     resetWordStats: FunctionReference<
       "mutation",
       "public",
-      { wordId: any },
+      { wordId: Id<"words"> },
       { success: true }
     >;
     restoreWord: FunctionReference<
       "mutation",
       "public",
-      { wordId: any },
+      { wordId: Id<"words"> },
       { success: true }
     >;
     updateWord: FunctionReference<
@@ -173,7 +173,7 @@ export declare const api: {
         difficulty?: "easy" | "medium" | "hard";
         example?: string;
         word?: string;
-        wordId: any;
+        wordId: Id<"words">;
       },
       { success: true }
     >;

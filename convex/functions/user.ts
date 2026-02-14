@@ -1,4 +1,4 @@
-import { zid } from "convex-helpers/server/zod3";
+import { zid } from "convex-helpers/server/zod4";
 import { z } from "zod";
 import { authQuery } from "../lib/crpc";
 

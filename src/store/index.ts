@@ -1,5 +1,4 @@
 import { Store } from "@tanstack/react-store";
-import type { Word } from "@/types/types";
 
 interface PracticeSession {
   id: string;
@@ -107,18 +106,4 @@ export function setSpeechRate(rate: number) {
     ...state,
     speechRate: rate,
   }));
-}
-
-export function getWordStats(word: Word) {
-  const totalAttempts = word.correctCount + word.incorrectCount;
-  const accuracy =
-    totalAttempts > 0 ? (word.correctCount / totalAttempts) * 100 : 0;
-
-  return {
-    totalAttempts,
-    accuracy: Math.round(accuracy),
-    isNew: totalAttempts === 0,
-    isMastered: word.streak >= 5,
-    needsReview: word.nextReview && word.nextReview <= Date.now(),
-  };
 }

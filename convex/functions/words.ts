@@ -1,6 +1,6 @@
 import type { Id } from "@convex/dataModel";
 import { CRPCError } from "better-convex/server";
-import { zid } from "convex-helpers/server/zod3";
+import { zid } from "convex-helpers/server/zod4";
 import { z } from "zod";
 import { authMutation, authQuery } from "../lib/crpc";
 import type { Difficulty } from "../shared/schemas";
