@@ -6,6 +6,14 @@ export const meta = {
   user: {
     getSessionUser: { auth: 'required', type: 'query' },
   },
+  wordLists: {
+    createList: { auth: 'required', type: 'mutation' },
+    deleteList: { auth: 'required', type: 'mutation' },
+    getListById: { auth: 'required', type: 'query' },
+    getUserLists: { auth: 'required', type: 'query' },
+    restoreList: { auth: 'required', type: 'mutation' },
+    updateList: { auth: 'required', type: 'mutation' },
+  },
   _http: {},
 } as const;
 

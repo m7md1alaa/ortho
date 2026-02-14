@@ -28,6 +28,24 @@ export declare const api: {
       { email: string; id: any; image?: string | null; name: string }
     >;
   };
+  wordLists: {
+    createList: FunctionReference<
+      "mutation",
+      "public",
+      { description?: string; name: string },
+      any
+    >;
+    deleteList: FunctionReference<"mutation", "public", { listId: any }, any>;
+    getListById: FunctionReference<"query", "public", { listId: any }, any>;
+    getUserLists: FunctionReference<"query", "public", {}, any>;
+    restoreList: FunctionReference<"mutation", "public", { listId: any }, any>;
+    updateList: FunctionReference<
+      "mutation",
+      "public",
+      { description?: string; listId: any; name?: string },
+      any
+    >;
+  };
 };
 
 /**
