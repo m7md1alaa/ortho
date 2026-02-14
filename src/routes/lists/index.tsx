@@ -27,9 +27,19 @@ function ListsPage() {
   const nameId = useId();
   const descriptionId = useId();
 
-  const { data: wordLists, isPending } = useQuery<
-    ApiOutputs["wordLists"]["getUserLists"]
-  >(crpc.wordLists.getUserLists.queryOptions({}));
+  const {
+    data: wordLists,
+    isPending,
+    error,
+  } = useQuery<ApiOutputs["wordLists"]["getUserLists"]>(
+    crpc.wordLists.getUserLists.queryOptions({})
+  );
+
+  useEffect(() => {
+    if (error?.message?.includes("UNAUTHORIZED")) {
+      navigate({ to: "/auth" });
+    }
+  }, [error, navigate]);
 
   const createList = useMutation(
     crpc.wordLists.createList.mutationOptions({

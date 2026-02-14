@@ -9,9 +9,14 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const crpc = useCRPC();
-  const { data: wordLists = [] } = useQuery(
+  const { data: wordLists = [], error } = useQuery(
     crpc.wordLists.getUserLists.queryOptions({})
   );
+
+  // Handle unauthorized error silently - user will see empty state
+  if (error?.message?.includes("UNAUTHORIZED")) {
+    // Return empty state for unauthenticated users
+  }
 
   const totalWords = wordLists.reduce(
     (acc: number, list) => acc + (list.wordCount ?? 0),
