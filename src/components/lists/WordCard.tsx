@@ -13,7 +13,7 @@ import {
   getAccuracyColor,
   getDifficultyColor,
 } from "@/lib/wordStats";
-import type { Word } from "@/types";
+import type { Word } from "@/types/types";
 import { DeleteWordDialog } from "./DeleteWordDialog";
 
 interface WordCardProps {
@@ -60,13 +60,13 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
 
   if (isEditing) {
     return (
-      <div className="group bg-zinc-900/50 border border-zinc-700 rounded-xl p-4">
+      <div className="group rounded-xl border border-zinc-700 bg-zinc-900/50 p-4">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <span className="text-zinc-600 text-sm font-mono">#{index}</span>
+            <span className="font-mono text-sm text-zinc-600">#{index}</span>
             <input
-              type="text"
-              value={editWord}
+              autoFocus
+              className="flex-1 font-semibold text-xl text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-0"
               onChange={(e) => setEditWord(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -76,22 +76,21 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
                   handleCancel();
                 }
               }}
+              placeholder="Word"
               style={{
                 border: "none",
                 outline: "none",
                 boxShadow: "none",
                 background: "transparent",
               }}
-              className="flex-1 text-xl font-semibold text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-0"
-              placeholder="Word"
+              type="text"
               // biome-ignore lint/a11y/noAutofocus: Edit mode needs focus
-              autoFocus
+              value={editWord}
             />
           </div>
 
           <input
-            type="text"
-            value={editDefinition}
+            className="w-full text-zinc-400 placeholder:text-zinc-600 focus:outline-none focus:ring-0"
             onChange={(e) => setEditDefinition(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -101,19 +100,19 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
                 handleCancel();
               }
             }}
+            placeholder="Definition (optional)"
             style={{
               border: "none",
               outline: "none",
               boxShadow: "none",
               background: "transparent",
             }}
-            className="w-full text-zinc-400 placeholder:text-zinc-600 focus:outline-none focus:ring-0"
-            placeholder="Definition (optional)"
+            type="text"
+            value={editDefinition}
           />
 
           <input
-            type="text"
-            value={editExample}
+            className="w-full text-sm text-zinc-500 italic placeholder:text-zinc-600 focus:outline-none focus:ring-0"
             onChange={(e) => setEditExample(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -123,24 +122,25 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
                 handleCancel();
               }
             }}
+            placeholder="Example sentence (optional)"
             style={{
               border: "none",
               outline: "none",
               boxShadow: "none",
               background: "transparent",
             }}
-            className="w-full text-zinc-500 italic text-sm placeholder:text-zinc-600 focus:outline-none focus:ring-0"
-            placeholder="Example sentence (optional)"
+            type="text"
+            value={editExample}
           />
 
           <div className="flex items-center justify-between pt-2">
             <Select
-              value={editDifficulty}
               onValueChange={(value) =>
                 setEditDifficulty(value as "easy" | "medium" | "hard")
               }
+              value={editDifficulty}
             >
-              <SelectTrigger className="w-28 h-8 text-xs">
+              <SelectTrigger className="h-8 w-28 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -151,11 +151,11 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
             </Select>
 
             <div className="flex gap-2">
-              <Button size="sm" onClick={handleSave}>
-                <CheckCircle className="w-4 h-4 mr-1" />
+              <Button onClick={handleSave} size="sm">
+                <CheckCircle className="mr-1 h-4 w-4" />
                 Save
               </Button>
-              <Button size="sm" variant="ghost" onClick={handleCancel}>
+              <Button onClick={handleCancel} size="sm" variant="ghost">
                 Cancel
               </Button>
             </div>
@@ -166,36 +166,36 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
   }
 
   return (
-    <div className="group bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 transition-all">
+    <div className="group rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-all hover:border-zinc-700">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-zinc-600 text-sm font-mono">#{index}</span>
-            <h3 className="text-xl font-semibold text-zinc-100">{word.word}</h3>
+          <div className="mb-2 flex items-center gap-3">
+            <span className="font-mono text-sm text-zinc-600">#{index}</span>
+            <h3 className="font-semibold text-xl text-zinc-100">{word.word}</h3>
             <Button
-              variant="ghost"
-              size="icon-xs"
               onClick={speakWord}
+              size="icon-xs"
               title="Listen"
+              variant="ghost"
             >
-              <Volume2 className="w-4 h-4" />
+              <Volume2 className="h-4 w-4" />
             </Button>
           </div>
 
           {word.definition && (
-            <p className="text-zinc-400 mb-2">{word.definition}</p>
+            <p className="mb-2 text-zinc-400">{word.definition}</p>
           )}
 
           {word.example && (
-            <p className="text-zinc-500 italic text-sm mb-3">
+            <p className="mb-3 text-sm text-zinc-500 italic">
               "{word.example}"
             </p>
           )}
 
           <div className="flex items-center gap-4 text-sm">
             <span
-              className={`px-2 py-1 rounded text-xs font-medium ${getDifficultyColor(
-                word.difficulty,
+              className={`rounded px-2 py-1 font-medium text-xs ${getDifficultyColor(
+                word.difficulty
               )}`}
             >
               {word.difficulty}
@@ -203,7 +203,7 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
 
             {word.streak > 0 && (
               <span className="flex items-center gap-1 text-green-400">
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle className="h-4 w-4" />
                 {word.streak} streak
               </span>
             )}
@@ -212,29 +212,29 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
               <span
                 className={`flex items-center gap-1 ${getAccuracyColor(stats.accuracy)}`}
               >
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="h-4 w-4" />
                 {stats.accuracy}% accuracy
               </span>
             )}
 
-            {word.nextReview && word.nextReview > new Date() && (
+            {word.nextReview && word.nextReview > Date.now() && (
               <span className="text-zinc-600">
-                Next review: {word.nextReview.toLocaleDateString()}
+                Next review: {new Date(word.nextReview).toLocaleDateString()}
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
           <Button
-            variant="ghost"
-            size="icon-xs"
             onClick={startEditing}
+            size="icon-xs"
             title="Edit"
+            variant="ghost"
           >
-            <Edit2 className="w-4 h-4" />
+            <Edit2 className="h-4 w-4" />
           </Button>
-          <DeleteWordDialog word={word.word} onDelete={onDelete} />
+          <DeleteWordDialog onDelete={onDelete} word={word.word} />
         </div>
       </div>
     </div>

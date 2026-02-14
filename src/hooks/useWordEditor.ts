@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Word } from "@/types";
+import type { Difficulty, Word } from "@/types/types";
 
 interface UseWordEditorProps {
   word: Word;
@@ -7,7 +7,7 @@ interface UseWordEditorProps {
     word: string;
     definition?: string;
     example?: string;
-    difficulty: "easy" | "medium" | "hard";
+    difficulty: Difficulty;
   }) => void;
 }
 
@@ -16,12 +16,12 @@ interface UseWordEditorReturn {
   editWord: string;
   editDefinition: string;
   editExample: string;
-  editDifficulty: "easy" | "medium" | "hard";
+  editDifficulty: Difficulty;
   setIsEditing: (value: boolean) => void;
   setEditWord: (value: string) => void;
   setEditDefinition: (value: string) => void;
   setEditExample: (value: string) => void;
-  setEditDifficulty: (value: "easy" | "medium" | "hard") => void;
+  setEditDifficulty: (value: Difficulty) => void;
   handleSave: () => void;
   handleCancel: () => void;
   startEditing: () => void;

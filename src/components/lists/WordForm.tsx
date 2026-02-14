@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { Difficulty } from "@/types/types";
 
 const wordFormSchema = z.object({
   word: z.string().min(1, "Word is required"),
@@ -37,24 +38,24 @@ export function WordForm({ onSubmit, onCancel }: WordFormProps) {
       word: "",
       definition: "",
       example: "",
-      difficulty: "medium" as "easy" | "medium" | "hard",
+      difficulty: "medium" as Difficulty,
     },
     validators: {
       onSubmit: wordFormSchema,
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: ({ value }) => {
       onSubmit(value);
     },
   });
 
   return (
     <form
+      className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
         form.handleSubmit();
       }}
-      className="space-y-4"
     >
       <form.Field name="word">
         {(field) => (
@@ -62,13 +63,13 @@ export function WordForm({ onSubmit, onCancel }: WordFormProps) {
             <Label htmlFor={wordId}>Word *</Label>
             <Input
               id={wordId}
-              type="text"
-              value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               placeholder="Enter the word"
+              type="text"
+              value={field.state.value}
             />
             {field.state.meta.errors.length > 0 && (
-              <p className="text-sm text-destructive">
+              <p className="text-destructive text-sm">
                 {String(field.state.meta.errors[0])}
               </p>
             )}
@@ -82,10 +83,10 @@ export function WordForm({ onSubmit, onCancel }: WordFormProps) {
             <Label htmlFor={definitionId}>Definition</Label>
             <Textarea
               id={definitionId}
-              value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               placeholder="What does this word mean?"
               rows={2}
+              value={field.state.value}
             />
           </div>
         )}
@@ -97,10 +98,10 @@ export function WordForm({ onSubmit, onCancel }: WordFormProps) {
             <Label htmlFor={exampleId}>Example Sentence</Label>
             <Textarea
               id={exampleId}
-              value={field.state.value}
               onChange={(e) => field.handleChange(e.target.value)}
               placeholder="Use the word in a sentence..."
               rows={2}
+              value={field.state.value}
             />
           </div>
         )}
@@ -111,10 +112,8 @@ export function WordForm({ onSubmit, onCancel }: WordFormProps) {
           <div className="space-y-2">
             <Label>Difficulty</Label>
             <Select
+              onValueChange={(value) => field.handleChange(value as Difficulty)}
               value={field.state.value}
-              onValueChange={(value) =>
-                field.handleChange(value as "easy" | "medium" | "hard")
-              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select difficulty" />
@@ -131,15 +130,15 @@ export function WordForm({ onSubmit, onCancel }: WordFormProps) {
 
       <div className="flex gap-3 pt-2">
         <Button
-          type="submit"
-          disabled={form.state.isSubmitting}
           className="flex-1"
+          disabled={form.state.isSubmitting}
+          type="submit"
         >
-          <Save className="w-4 h-4" />
+          <Save className="h-4 w-4" />
           Add Word
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          <X className="w-4 h-4" />
+        <Button onClick={onCancel} type="button" variant="outline">
+          <X className="h-4 w-4" />
         </Button>
       </div>
     </form>

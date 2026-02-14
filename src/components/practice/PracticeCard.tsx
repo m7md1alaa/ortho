@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { FeedbackMessage } from "@/hooks/practice/usePracticeSession";
-import type { Word } from "@/types";
+import type { Word } from "@/types/types";
 import { AnswerInput } from "./AnswerInput";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { WordDisplay } from "./WordDisplay";
@@ -52,22 +52,22 @@ export function PracticeCard({
 
   return (
     <div className="min-h-screen bg-black text-zinc-100">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Progress Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <Link
+              className="inline-flex items-center gap-2 text-zinc-500 transition-colors hover:text-zinc-300"
               to={exitLink}
-              className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-300 transition-colors"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="h-4 w-4" />
               Exit Practice
             </Link>
             <span className="text-zinc-500">
               {currentWordIndex + 1} / {totalWords}
             </span>
           </div>
-          <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="h-1 overflow-hidden rounded-full bg-zinc-800">
             <div
               className="h-full bg-zinc-100 transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -76,49 +76,49 @@ export function PracticeCard({
         </div>
 
         {/* Main Card */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 sm:p-12">
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 sm:p-12">
           <WordDisplay
-            word={currentWord.word}
             definition={currentWord.definition}
             example={currentWord.example}
             onPlayAudio={onPlayAudio}
+            word={currentWord.word}
           />
 
           <AnswerInput
-            value={userInput}
-            onChange={setUserInput}
-            onSubmit={onSubmit}
-            inputRef={inputRef}
-            showAnswer={showAnswer}
-            hasAnsweredCorrectly={hasAnsweredCorrectly}
-            feedbackMessage={feedbackMessage}
-            hint={hint}
             borderClass={inputBorderClass}
             correctWord={currentWord.word}
-            onFocus={onFocusInput}
+            feedbackMessage={feedbackMessage}
+            hasAnsweredCorrectly={hasAnsweredCorrectly}
+            hint={hint}
+            inputRef={inputRef}
             onBlur={onBlurInput}
+            onChange={setUserInput}
+            onFocus={onFocusInput}
+            onSubmit={onSubmit}
+            showAnswer={showAnswer}
+            value={userInput}
           />
 
           {/* Action Buttons */}
-          <div className="flex gap-3 mt-6 max-w-md mx-auto">
-            {!showAnswer ? (
+          <div className="mx-auto mt-6 flex max-w-md gap-3">
+            {showAnswer ? (
+              <Button className="flex-1" onClick={onNextWord}>
+                {currentWordIndex >= totalWords - 1 ? "Finish" : "Next Word"} →
+              </Button>
+            ) : (
               <>
                 <Button
-                  onClick={onSubmit}
-                  disabled={!userInput.trim()}
                   className="flex-1"
+                  disabled={!userInput.trim()}
+                  onClick={onSubmit}
                 >
                   Submit (Enter)
                 </Button>
                 <Button onClick={onShowAnswer} variant="secondary">
-                  <HelpCircle className="w-4 h-4 mr-2" />
+                  <HelpCircle className="mr-2 h-4 w-4" />
                   Show Answer
                 </Button>
               </>
-            ) : (
-              <Button onClick={onNextWord} className="flex-1">
-                {currentWordIndex >= totalWords - 1 ? "Finish" : "Next Word"} →
-              </Button>
             )}
           </div>
 

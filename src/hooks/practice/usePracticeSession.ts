@@ -6,7 +6,7 @@ import {
   setCurrentWordIndex,
   startPracticeSession,
 } from "@/store";
-import type { Word } from "@/types";
+import type { Word } from "@/types/types";
 
 export type FeedbackType = "success" | "error" | "neutral" | "close";
 
@@ -48,7 +48,7 @@ export interface UsePracticeSessionReturn {
 export function usePracticeSession(
   listId: string,
   listWords: Word[],
-  currentWordIndex: number,
+  currentWordIndex: number
 ): UsePracticeSessionReturn {
   const [userInput, setUserInput] = useState("");
   const [showAnswer, setShowAnswer] = useState(false);
@@ -82,7 +82,9 @@ export function usePracticeSession(
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (!currentWord || !userInput.trim()) return;
+    if (!(currentWord && userInput.trim())) {
+      return;
+    }
 
     const feedback = getAnswerFeedback(userInput, currentWord.word);
     const newAttempts = attempts + 1;
@@ -113,7 +115,9 @@ export function usePracticeSession(
   }, [currentWord, userInput, attempts]);
 
   const handleShowAnswer = useCallback(() => {
-    if (!currentWord) return;
+    if (!currentWord) {
+      return;
+    }
     recordWordPractice(currentWord.id, false, attempts, 0);
     setResults((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
     setShowAnswer(true);

@@ -1,5 +1,17 @@
 import { Store } from "@tanstack/react-store";
-import type { PracticeSession, Word } from "@/types";
+import type { Word } from "@/types/types";
+
+interface PracticeSession {
+  id: string;
+  listId: string;
+  startedAt: number;
+  wordsPracticed: Array<{
+    wordId: string;
+    attempts: number;
+    correct: boolean;
+    timeSpent: number;
+  }>;
+}
 
 export interface AppState {
   currentSession: PracticeSession | null;
@@ -27,7 +39,7 @@ export function startPracticeSession(listId: string) {
   const session: PracticeSession = {
     id: generateId(),
     listId,
-    startedAt: new Date(),
+    startedAt: Date.now(),
     wordsPracticed: [],
   };
   store.setState((state) => ({
@@ -107,6 +119,6 @@ export function getWordStats(word: Word) {
     accuracy: Math.round(accuracy),
     isNew: totalAttempts === 0,
     isMastered: word.streak >= 5,
-    needsReview: word.nextReview && word.nextReview <= new Date(),
+    needsReview: word.nextReview && word.nextReview <= Date.now(),
   };
 }
