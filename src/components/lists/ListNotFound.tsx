@@ -2,12 +2,12 @@ import { Link } from "@tanstack/react-router";
 
 export function ListNotFound() {
   return (
-    <div className="min-h-screen bg-black text-zinc-100 flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center bg-black text-zinc-100">
       <div className="text-center">
-        <h1 className="text-2xl font-bold mb-4">List not found</h1>
+        <h1 className="mb-4 font-bold text-2xl">List not found</h1>
         <Link
+          className="text-zinc-400 transition-colors hover:text-white"
           to="/lists"
-          className="text-zinc-400 hover:text-white transition-colors"
         >
           ← Back to lists
         </Link>

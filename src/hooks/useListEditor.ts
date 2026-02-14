@@ -26,7 +26,7 @@ export function useListEditor({
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(initialName);
   const [editDescription, setEditDescription] = useState(
-    initialDescription || "",
+    initialDescription || ""
   );
 
   function handleSave() {

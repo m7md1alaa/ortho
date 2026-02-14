@@ -10,7 +10,6 @@ import { NotFound } from "./components/NotFound";
 import { createQueryClient } from "./lib/convex/query-client";
 import { routeTree } from "./routeTree.gen";
 
-
 export const getRouter = () => {
   const convexClientUrl: string | undefined | null = import.meta.env
     .VITE_CONVEX_URL;

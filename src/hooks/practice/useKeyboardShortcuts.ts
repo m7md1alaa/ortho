@@ -17,7 +17,7 @@ export interface UseKeyboardShortcutsProps {
     value: {
       text: string;
       type: "success" | "error" | "neutral" | "close";
-    } | null,
+    } | null
   ) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
 }
@@ -52,33 +52,33 @@ export function useKeyboardShortcuts({
       }
     },
     { enableOnFormTags: true },
-    [sessionComplete, showAnswer, goToNextWord, handleSubmit],
+    [sessionComplete, showAnswer, goToNextWord, handleSubmit]
   );
 
   // Show answer (Tab - only when not showing answer)
   useHotkeys(
     "tab",
     (e) => {
-      if (!sessionComplete && !showAnswer) {
+      if (!(sessionComplete || showAnswer)) {
         e.preventDefault();
         handleShowAnswer();
       }
     },
     { enableOnFormTags: true },
-    [sessionComplete, showAnswer, handleShowAnswer],
+    [sessionComplete, showAnswer, handleShowAnswer]
   );
 
   // Replay audio (Space - only when input is NOT focused)
   useHotkeys(
     "space",
     (e) => {
-      if (!sessionComplete && !inputFocused && currentWord) {
+      if (!(sessionComplete || inputFocused) && currentWord) {
         e.preventDefault();
         speakWord(currentWord);
       }
     },
     { enableOnFormTags: false }, // Don't enable on form tags
-    [sessionComplete, inputFocused, currentWord, speakWord],
+    [sessionComplete, inputFocused, currentWord, speakWord]
   );
 
   // Next word with Cmd (Mac) / Alt (Windows) + Right Arrow (when showing answer)
@@ -92,7 +92,7 @@ export function useKeyboardShortcuts({
       }
     },
     { enableOnFormTags: true },
-    [sessionComplete, showAnswer, goToNextWord],
+    [sessionComplete, showAnswer, goToNextWord]
   );
 
   // Previous word with Cmd (Mac) / Alt (Windows) + Left Arrow
@@ -106,7 +106,7 @@ export function useKeyboardShortcuts({
       }
     },
     { enableOnFormTags: true },
-    [sessionComplete, currentWordIndex, goToPreviousWord],
+    [sessionComplete, currentWordIndex, goToPreviousWord]
   );
 
   // Focus input field (Cmd/Ctrl + /)
@@ -119,7 +119,7 @@ export function useKeyboardShortcuts({
       }
     },
     { enableOnFormTags: true },
-    [sessionComplete, inputRef],
+    [sessionComplete, inputRef]
   );
 
   // Reset / Clear (Esc)
@@ -135,12 +135,6 @@ export function useKeyboardShortcuts({
       }
     },
     { enableOnFormTags: true },
-    [
-      sessionComplete,
-      setShowAnswer,
-      setUserInput,
-      setFeedbackMessage,
-      inputRef,
-    ],
+    [sessionComplete, setShowAnswer, setUserInput, setFeedbackMessage, inputRef]
   );
 }

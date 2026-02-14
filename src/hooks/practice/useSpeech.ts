@@ -7,7 +7,7 @@ export interface UseSpeechReturn {
 export function useSpeech(
   audioEnabled: boolean,
   speechRate: number,
-  currentWord: string | undefined,
+  currentWord: string | undefined
 ): UseSpeechReturn {
   const speakWord = useCallback(
     (word: string) => {
@@ -19,7 +19,7 @@ export function useSpeech(
         window.speechSynthesis.speak(utterance);
       }
     },
-    [audioEnabled, speechRate],
+    [audioEnabled, speechRate]
   );
 
   // Auto-speak current word

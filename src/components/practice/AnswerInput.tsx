@@ -48,39 +48,39 @@ export function AnswerInput({
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="mx-auto max-w-md">
       <div className="relative">
         <input
-          ref={inputRef}
-          type="text"
-          value={value}
+          autoCapitalize="off"
+          autoComplete="off"
+          autoCorrect="off"
+          className={cn(
+            "w-full rounded-xl border-2 bg-zinc-800 px-6 py-4 text-center font-medium text-2xl transition-all focus:outline-none",
+            borderClass
+          )}
+          disabled={showAnswer}
+          onBlur={onBlur}
           onChange={(e) => onChange(e.target.value)}
+          onFocus={onFocus}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
               onSubmit();
             }
           }}
-          onFocus={onFocus}
-          onBlur={onBlur}
           placeholder="Type the word you hear..."
-          disabled={showAnswer}
-          className={cn(
-            "w-full px-6 py-4 text-center text-2xl font-medium bg-zinc-800 border-2 rounded-xl focus:outline-none transition-all",
-            borderClass,
-          )}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
+          ref={inputRef}
           spellCheck={false}
+          type="text"
+          value={value}
         />
 
         {showAnswer && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+          <div className="absolute top-1/2 right-4 -translate-y-1/2">
             {hasAnsweredCorrectly ? (
-              <CheckCircle className="w-8 h-8 text-green-500" />
+              <CheckCircle className="h-8 w-8 text-green-500" />
             ) : (
-              <XCircle className="w-8 h-8 text-red-500" />
+              <XCircle className="h-8 w-8 text-red-500" />
             )}
           </div>
         )}
@@ -89,16 +89,16 @@ export function AnswerInput({
       {/* Hint display */}
       {hint && !showAnswer && (
         <div className="mt-3 flex items-center justify-center gap-2 text-amber-500/80">
-          <Lightbulb className="w-4 h-4" />
-          <span className="text-lg font-medium tracking-wider">{hint}</span>
+          <Lightbulb className="h-4 w-4" />
+          <span className="font-medium text-lg tracking-wider">{hint}</span>
         </div>
       )}
 
       {feedbackMessage && (
         <p
           className={cn(
-            "mt-3 text-center text-sm font-medium",
-            getFeedbackColor(feedbackMessage.type),
+            "mt-3 text-center font-medium text-sm",
+            getFeedbackColor(feedbackMessage.type)
           )}
         >
           {feedbackMessage.text}
@@ -106,8 +106,8 @@ export function AnswerInput({
       )}
 
       {showAnswer && !hasAnsweredCorrectly && (
-        <div className="mt-4 p-4 bg-red-900/20 border border-red-900/50 rounded-lg">
-          <p className="text-red-400 text-center">
+        <div className="mt-4 rounded-lg border border-red-900/50 bg-red-900/20 p-4">
+          <p className="text-center text-red-400">
             Correct spelling: <span className="font-bold">{correctWord}</span>
           </p>
         </div>

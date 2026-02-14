@@ -14,8 +14,12 @@ export function levenshteinDistance(a: string, b: string): number {
   const aLen = a.length;
   const bLen = b.length;
 
-  if (aLen === 0) return bLen;
-  if (bLen === 0) return aLen;
+  if (aLen === 0) {
+    return bLen;
+  }
+  if (bLen === 0) {
+    return aLen;
+  }
 
   // Initialize matrix
   for (let i = 0; i <= aLen; i++) {
@@ -32,7 +36,7 @@ export function levenshteinDistance(a: string, b: string): number {
       matrix[i][j] = Math.min(
         matrix[i - 1][j] + 1, // deletion
         matrix[i][j - 1] + 1, // insertion
-        matrix[i - 1][j - 1] + cost, // substitution
+        matrix[i - 1][j - 1] + cost // substitution
       );
     }
   }
@@ -48,15 +52,23 @@ export function isCloseAnswer(input: string, target: string): boolean {
   const normalizedInput = input.toLowerCase().trim();
   const normalizedTarget = target.toLowerCase().trim();
 
-  if (normalizedInput === normalizedTarget) return false; // Exact match, not "close"
+  if (normalizedInput === normalizedTarget) {
+    return false; // Exact match, not "close"
+  }
 
   const distance = levenshteinDistance(normalizedInput, normalizedTarget);
   const targetLen = normalizedTarget.length;
 
   // Define "close" thresholds based on word length
-  if (targetLen <= 4) return distance <= 1;
-  if (targetLen <= 7) return distance <= 2;
-  if (targetLen <= 10) return distance <= 3;
+  if (targetLen <= 4) {
+    return distance <= 1;
+  }
+  if (targetLen <= 7) {
+    return distance <= 2;
+  }
+  if (targetLen <= 10) {
+    return distance <= 3;
+  }
   return distance <= 4;
 }
 
@@ -66,13 +78,17 @@ export function isCloseAnswer(input: string, target: string): boolean {
  */
 export function generateWordHint(
   word: string,
-  revealedPositions: number[] = [],
+  revealedPositions: number[] = []
 ): string {
   return word
     .split("")
     .map((char, index) => {
-      if (revealedPositions.includes(index)) return char;
-      if (char === " ") return " ";
+      if (revealedPositions.includes(index)) {
+        return char;
+      }
+      if (char === " ") {
+        return " ";
+      }
       return "_";
     })
     .join(" ");
@@ -83,7 +99,7 @@ export function generateWordHint(
  */
 export function getAnswerFeedback(
   input: string,
-  target: string,
+  target: string
 ): {
   isCorrect: boolean;
   isClose: boolean;
@@ -124,7 +140,9 @@ export function getAnswerFeedback(
  * Returns null if no hint should be shown
  */
 export function calculateHint(word: string, attempts: number): string | null {
-  if (attempts === 0) return null;
+  if (attempts === 0) {
+    return null;
+  }
   if (attempts === 1) {
     // Show word length only
     return generateWordHint(word, []);
@@ -148,7 +166,7 @@ export function getInputBorderClass(
   showAnswer: boolean,
   hasAnsweredCorrectly: boolean,
   userInput: string,
-  currentWord: string | undefined,
+  currentWord: string | undefined
 ): string {
   if (showAnswer) {
     return hasAnsweredCorrectly
@@ -156,10 +174,12 @@ export function getInputBorderClass(
       : "border-red-500 text-red-400 disabled:text-red-400 disabled:border-red-500";
   }
   // Check if current input is close to answer
-  if (userInput.trim() && currentWord) {
-    if (isCloseAnswer(userInput, currentWord)) {
-      return "border-amber-500 text-amber-400 focus:border-amber-400";
-    }
+  if (
+    userInput.trim() &&
+    currentWord &&
+    isCloseAnswer(userInput, currentWord)
+  ) {
+    return "border-amber-500 text-amber-400 focus:border-amber-400";
   }
   return "border-zinc-700 focus:border-zinc-500";
 }

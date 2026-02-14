@@ -25,7 +25,9 @@ export async function rateLimitGuard(
 
   const status = await rateLimiter.limit(ctx, ctx.rateLimitKey, {
     key: identifier,
-    config: rateLimitConfig[ctx.rateLimitKey as keyof typeof rateLimitConfig] ?? rateLimitConfig.default,
+    config:
+      rateLimitConfig[ctx.rateLimitKey as keyof typeof rateLimitConfig] ??
+      rateLimitConfig.default,
   });
 
   if (!status.ok) {
