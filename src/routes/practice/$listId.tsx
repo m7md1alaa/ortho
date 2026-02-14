@@ -1,7 +1,9 @@
+import type { Id } from "@convex/dataModel";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import { useState } from "react";
+import { useAuth } from "better-convex/react";
+import { useEffect, useState } from "react";
 import { PracticeCard } from "@/components/practice/PracticeCard";
 import { PracticeCardSkeleton } from "@/components/practice/PracticeCardSkeleton";
 import { ResultsScreen } from "@/components/practice/ResultsScreen";
@@ -9,33 +11,80 @@ import { useKeyboardShortcuts } from "@/hooks/practice/useKeyboardShortcuts";
 import { usePracticeSession } from "@/hooks/practice/usePracticeSession";
 import { useSpeech } from "@/hooks/practice/useSpeech";
 import { useCRPC } from "@/lib/convex/crpc";
+import { getPublicListById } from "@/lib/convex/discover";
 import { calculateHint, getInputBorderClass } from "@/lib/utils";
 import { store } from "@/store";
-import { asId } from "@/types/types";
+import { asId, type Word } from "@/types/types";
 
 export const Route = createFileRoute("/practice/$listId")({
   component: PracticePage,
+  loader: async ({ params }) => {
+    try {
+      const list = await getPublicListById({
+        data: { listId: params.listId as Id<"wordLists"> },
+      });
+      return { list, error: null };
+    } catch (error) {
+      console.error("Practice loader error:", error);
+      return {
+        list: null,
+        error: error instanceof Error ? error.message : "Failed to load list",
+      };
+    }
+  },
 });
 
 function PracticePage() {
   const { listId } = useParams({ from: "/practice/$listId" });
+  const loaderData = Route.useLoaderData();
   const crpc = useCRPC();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  
+  // Track if we're on the client to avoid hydration mismatches
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const typedListId = asId<"wordLists">(listId);
 
-  const {
-    data: list,
-    isPending,
-    error,
-  } = useQuery(
-    crpc.wordLists.getListById.queryOptions({ listId: typedListId })
-  );
+  // For authenticated users: use reactive query with full data
+  // Only enable after hydration to avoid mismatches
+  const { data: authList, isPending: isAuthPending } = useQuery({
+    ...crpc.wordLists.getListById.queryOptions({ listId: typedListId }),
+    enabled: isClient && isAuthenticated,
+  });
+
+  // Use auth data if available and we're on client, otherwise fall back to loader data
+  const list = (isClient && isAuthenticated) ? authList : loaderData?.list;
+  const isPending = isAuthLoading || (isClient && isAuthenticated && isAuthPending);
 
   const currentWordIndex = useStore(store, (state) => state.currentWordIndex);
   const audioEnabled = useStore(store, (state) => state.audioEnabled);
   const speechRate = useStore(store, (state) => state.speechRate);
 
-  const words = list?.words ?? [];
+  // Map words to the expected format - public lists have minimal word data
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const words: Word[] =
+    list?.words.map(
+      (w: { id: Id<"words">; word: string } | Word): Word =>
+        "correctCount" in w
+          ? (w as Word)
+          : ({
+              id: w.id,
+              word: w.word,
+              correctCount: 0,
+              createdAt: Date.now(),
+              difficulty: "medium" as const,
+              incorrectCount: 0,
+              lastPracticed: undefined,
+              listId: typedListId,
+              practiceCount: 0,
+              streak: 0,
+              updatedAt: Date.now(),
+              userId: undefined as unknown as Id<"user">,
+            } as Word)
+    ) ?? [];
   const [inputFocused, setInputFocused] = useState(false);
 
   const {
@@ -85,19 +134,23 @@ function PracticePage() {
   });
 
   if (isPending) {
-    return <PracticeCardSkeleton />;
+    return (
+      <div className="min-h-screen bg-black">
+        <div className="flex items-center justify-center py-20">
+          <PracticeCardSkeleton />
+        </div>
+      </div>
+    );
   }
 
-  if (error) {
+  if (loaderData?.error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-black text-zinc-100">
         <div className="text-center">
           <h1 className="mb-4 font-bold text-2xl text-red-400">
             Failed to load list
           </h1>
-          <p className="mb-4 text-zinc-400">
-            {error.message || "An unexpected error occurred"}
-          </p>
+          <p className="mb-4 text-zinc-400">{loaderData.error}</p>
           <Link
             className="text-zinc-400 transition-colors hover:text-white"
             to="/lists"
@@ -147,14 +200,32 @@ function PracticePage() {
 
   if (sessionComplete) {
     return (
-      <ResultsScreen
-        onRestart={() => {
-          resetSession();
-          setPracticeWords([...words].sort(() => Math.random() - 0.5));
-        }}
-        results={results}
-        totalWords={practiceWords.length}
-      />
+      <>
+        {!isAuthenticated && (
+          <div className="border-zinc-800 border-b bg-zinc-900/50 px-4 py-3">
+            <div className="mx-auto flex max-w-4xl items-center justify-between">
+              <p className="text-sm text-zinc-400">
+                Sign in to save your progress and track your improvement over
+                time
+              </p>
+              <Link
+                className="rounded bg-zinc-800 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-zinc-700"
+                to="/auth"
+              >
+                Sign In
+              </Link>
+            </div>
+          </div>
+        )}
+        <ResultsScreen
+          onRestart={() => {
+            resetSession();
+            setPracticeWords([...words].sort(() => Math.random() - 0.5));
+          }}
+          results={results}
+          totalWords={practiceWords.length}
+        />
+      </>
     );
   }
 
@@ -171,25 +242,43 @@ function PracticePage() {
   );
 
   return (
-    <PracticeCard
-      currentWord={currentWord}
-      currentWordIndex={currentWordIndex}
-      exitLink="/lists"
-      feedbackMessage={feedbackMessage}
-      hasAnsweredCorrectly={hasAnsweredCorrectly}
-      hint={hint}
-      inputBorderClass={inputBorderClass}
-      inputRef={inputRef}
-      onBlurInput={() => setInputFocused(false)}
-      onFocusInput={() => setInputFocused(true)}
-      onNextWord={goToNextWord}
-      onPlayAudio={() => speakWord(currentWord.word)}
-      onShowAnswer={handleShowAnswer}
-      onSubmit={handleSubmit}
-      setUserInput={setUserInput}
-      showAnswer={showAnswer}
-      totalWords={practiceWords.length}
-      userInput={userInput}
-    />
+    <>
+      {!isAuthenticated && (
+        <div className="border-zinc-800 border-b bg-zinc-900/50 px-4 py-3">
+          <div className="mx-auto flex max-w-4xl items-center justify-between">
+            <p className="text-sm text-zinc-400">
+              Sign in to save your progress
+            </p>
+            <Link
+              className="rounded bg-zinc-800 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-zinc-700"
+              to="/auth"
+            >
+              Sign In
+            </Link>
+          </div>
+        </div>
+      )}
+
+      <PracticeCard
+        currentWord={currentWord}
+        currentWordIndex={currentWordIndex}
+        exitLink="/lists"
+        feedbackMessage={feedbackMessage}
+        hasAnsweredCorrectly={hasAnsweredCorrectly}
+        hint={hint}
+        inputBorderClass={inputBorderClass}
+        inputRef={inputRef}
+        onBlurInput={() => setInputFocused(false)}
+        onFocusInput={() => setInputFocused(true)}
+        onNextWord={goToNextWord}
+        onPlayAudio={() => speakWord(currentWord.word)}
+        onShowAnswer={handleShowAnswer}
+        onSubmit={handleSubmit}
+        setUserInput={setUserInput}
+        showAnswer={showAnswer}
+        totalWords={practiceWords.length}
+        userInput={userInput}
+      />
+    </>
   );
 }
