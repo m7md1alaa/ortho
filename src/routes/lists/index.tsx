@@ -6,6 +6,7 @@ import { Authenticated, useAuth } from "better-convex/react";
 import { ArrowRight, BookOpen, Plus, Trash2 } from "lucide-react";
 import { useEffect, useId } from "react";
 import { z } from "zod";
+import { ListCardSkeleton } from "@/components/lists-skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -152,11 +153,10 @@ function ListsPage() {
 
             <div className="lg:col-span-2">
               {isPending || !wordLists ? (
-                <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
-                  <BookOpen className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
-                  <h3 className="mb-2 font-medium text-xl text-zinc-300">
-                    Loading...
-                  </h3>
+                <div className="space-y-4">
+                  <ListCardSkeleton />
+                  <ListCardSkeleton />
+                  <ListCardSkeleton />
                 </div>
               ) : (
                 <ListContent onDelete={deleteList} wordLists={wordLists} />
