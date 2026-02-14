@@ -14,6 +14,16 @@ export const meta = {
     restoreList: { auth: 'required', type: 'mutation' },
     updateList: { auth: 'required', type: 'mutation' },
   },
+  words: {
+    addWord: { auth: 'required', type: 'mutation' },
+    bulkImportWords: { auth: 'required', type: 'mutation' },
+    deleteWord: { auth: 'required', type: 'mutation' },
+    getWordsByListId: { auth: 'required', type: 'query' },
+    recordPractice: { auth: 'required', type: 'mutation' },
+    resetWordStats: { auth: 'required', type: 'mutation' },
+    restoreWord: { auth: 'required', type: 'mutation' },
+    updateWord: { auth: 'required', type: 'mutation' },
+  },
   _http: {},
 } as const;
 

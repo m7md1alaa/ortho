@@ -46,6 +46,66 @@ export declare const api: {
       any
     >;
   };
+  words: {
+    addWord: FunctionReference<
+      "mutation",
+      "public",
+      {
+        definition?: string;
+        difficulty: "easy" | "medium" | "hard";
+        example?: string;
+        listId: any;
+        word: string;
+      },
+      any
+    >;
+    bulkImportWords: FunctionReference<
+      "mutation",
+      "public",
+      {
+        listId: any;
+        words: Array<{
+          definition?: string;
+          difficulty: "easy" | "medium" | "hard";
+          example?: string;
+          word: string;
+        }>;
+      },
+      any
+    >;
+    deleteWord: FunctionReference<"mutation", "public", { wordId: any }, any>;
+    getWordsByListId: FunctionReference<
+      "query",
+      "public",
+      { listId: any },
+      any
+    >;
+    recordPractice: FunctionReference<
+      "mutation",
+      "public",
+      { correct: boolean; timeSpent: number; wordId: any },
+      any
+    >;
+    resetWordStats: FunctionReference<
+      "mutation",
+      "public",
+      { wordId: any },
+      any
+    >;
+    restoreWord: FunctionReference<"mutation", "public", { wordId: any }, any>;
+    updateWord: FunctionReference<
+      "mutation",
+      "public",
+      {
+        definition?: string;
+        difficulty?: "easy" | "medium" | "hard";
+        example?: string;
+        word?: string;
+        wordId: any;
+      },
+      any
+    >;
+  };
 };
 
 /**
