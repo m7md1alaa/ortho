@@ -404,6 +404,14 @@ export declare const internal: {
       any
     >;
   };
+  wordLists: {
+    addWordsToPublicList: FunctionReference<
+      "mutation",
+      "internal",
+      { listId: Id<"wordLists">; words: Array<string> },
+      any
+    >;
+  };
 };
 
 export declare const components: {

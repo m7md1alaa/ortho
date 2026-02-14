@@ -1,11 +1,11 @@
 import { getHeaders, getSession } from "better-convex/auth";
-import { api } from "../functions/_generated/api";
 import { CRPCError, initCRPC } from "better-convex/server";
 import type { Auth } from "convex/server";
 import {
   customCtx,
   customMutation,
 } from "convex-helpers/server/customFunctions";
+import { api } from "../functions/_generated/api";
 import type { DataModel, Id } from "../functions/_generated/dataModel";
 import type {
   ActionCtx,
@@ -14,13 +14,14 @@ import type {
 } from "../functions/_generated/server";
 import {
   action,
+  internalMutation as convexInternalMutation,
   httpAction,
   internalAction,
-  internalMutation,
   internalQuery,
   mutation,
   query,
 } from "../functions/_generated/server";
+
 import { getAuth } from "../functions/auth";
 import { type CtxWithTable, getCtxWithTable } from "./ents";
 import { rateLimitGuard } from "./rate-limiter";
@@ -78,7 +79,7 @@ const c = initCRPC
       }),
     // biome-ignore lint/suspicious/noExplicitAny: convex internals
     internalMutation: (handler: any) =>
-      internalMutation({
+      convexInternalMutation({
         ...handler,
       }),
     action,
@@ -162,6 +163,9 @@ export const publicMutation = c.mutation.use(devMiddleware);
 
 /** Private mutation - only callable from other Convex functions */
 export const privateMutation = c.mutation.internal();
+
+/** Internal mutation - only callable from Convex dashboard or other functions */
+export const internalMutation = c.mutation.internal();
 
 /** Auth mutation - ctx.user required, rate limited, dev: true */
 export const authMutation = c.mutation
@@ -248,7 +252,7 @@ export const router = c.router;
 
 /** Trigger-wrapped internalMutation for better-auth hooks */
 export const internalMutationWithTriggers = customMutation(
-  internalMutation,
+  convexInternalMutation,
   customCtx(async (ctx) => ({
     db: triggers.wrapDB(ctx).db,
   }))

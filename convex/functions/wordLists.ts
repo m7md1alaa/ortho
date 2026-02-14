@@ -2,7 +2,12 @@ import type { Id } from "@convex/dataModel";
 import { CRPCError } from "better-convex/server";
 import { zid } from "convex-helpers/server/zod4";
 import { z } from "zod";
-import { authMutation, authQuery, publicQuery } from "../lib/crpc";
+import {
+  authMutation,
+  authQuery,
+  internalMutation,
+  publicQuery,
+} from "../lib/crpc";
 import type { Difficulty } from "../shared/schemas";
 import { difficultySchema } from "../shared/schemas";
 
@@ -376,5 +381,56 @@ export const getPublicListById = publicQuery
       createdAt: list.createdAt,
       updatedAt: list.updatedAt,
       words: activeWords,
+    };
+  });
+
+export const addWordsToPublicList = internalMutation
+  .input(
+    z.object({
+      listId: zid("wordLists"),
+      words: z.array(z.string().min(1)),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    const { listId, words } = input;
+
+    // Get the list
+    const list = await ctx.table("wordLists").get(listId as Id<"wordLists">);
+
+    if (!list || list.deletionTime !== undefined) {
+      throw new CRPCError({
+        code: "NOT_FOUND",
+        message: "List not found",
+      });
+    }
+
+    // Verify it's a system list (admin created)
+    if (!list.isSystem) {
+      throw new CRPCError({
+        code: "FORBIDDEN",
+        message: "Can only add words to system lists",
+      });
+    }
+
+    // Insert all words
+    const insertedIds: Id<"words">[] = [];
+    for (const word of words) {
+      const wordId = await ctx.table("words").insert({
+        word: word.toLowerCase().trim(),
+        listId: listId as Id<"wordLists">,
+        difficulty: list.difficulty || "medium",
+        correctCount: 0,
+        incorrectCount: 0,
+        streak: 0,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+      insertedIds.push(wordId);
+    }
+
+    return {
+      success: true,
+      insertedCount: insertedIds.length,
+      wordIds: insertedIds,
     };
   });
