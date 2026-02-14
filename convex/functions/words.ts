@@ -3,6 +3,39 @@ import { CRPCError } from "better-convex/server";
 import { zid } from "convex-helpers/server/zod3";
 import { z } from "zod";
 import { authMutation, authQuery } from "../lib/crpc";
+import type { Difficulty } from "../shared/schemas";
+import { difficultySchema } from "../shared/schemas";
+
+// =============================================================================
+// Output Schemas
+// =============================================================================
+
+const wordSchema = z.object({
+  id: zid("words"),
+  word: z.string(),
+  definition: z.string().optional(),
+  example: z.string().optional(),
+  difficulty: difficultySchema,
+  lastPracticed: z.number().optional(),
+  nextReview: z.number().optional(),
+  correctCount: z.number(),
+  incorrectCount: z.number(),
+  streak: z.number(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
+const successSchema = z.object({ success: z.literal(true) });
+
+const wordCreatedSchema = z.object({ id: zid("words") });
+
+const wordImportedSchema = z.object({ count: z.number() });
+
+const practiceRecordedSchema = z.object({
+  success: z.literal(true),
+  streak: z.number(),
+  nextReview: z.number().optional(),
+});
 
 // =============================================================================
 // Queries
@@ -15,6 +48,7 @@ export const getWordsByListId = authQuery
       listId: zid("wordLists"),
     })
   )
+  .output(z.array(wordSchema))
   .query(async ({ ctx, input }) => {
     // First verify list ownership
     const list = await ctx
@@ -44,7 +78,7 @@ export const getWordsByListId = authQuery
       word: w.word,
       definition: w.definition,
       example: w.example,
-      difficulty: w.difficulty,
+      difficulty: w.difficulty as Difficulty,
       lastPracticed: w.lastPracticed,
       nextReview: w.nextReview,
       correctCount: w.correctCount,
@@ -70,6 +104,7 @@ export const addWord = authMutation
       difficulty: z.enum(["easy", "medium", "hard"]),
     })
   )
+  .output(wordCreatedSchema)
   .mutation(async ({ ctx, input }) => {
     const { listId, ...wordData } = input;
 
@@ -120,6 +155,7 @@ export const bulkImportWords = authMutation
         .max(300, "Cannot import more than 300 words at once"),
     })
   )
+  .output(wordImportedSchema)
   .mutation(async ({ ctx, input }) => {
     const { listId, words } = input;
 
@@ -166,6 +202,7 @@ export const updateWord = authMutation
       difficulty: z.enum(["easy", "medium", "hard"]).optional(),
     })
   )
+  .output(successSchema)
   .mutation(async ({ ctx, input }) => {
     const { wordId, ...updates } = input;
 
@@ -198,6 +235,7 @@ export const updateWord = authMutation
 /** Soft delete a word */
 export const deleteWord = authMutation
   .input(z.object({ wordId: zid("words") }))
+  .output(successSchema)
   .mutation(async ({ ctx, input }) => {
     const word = await ctx.table("words").get(input.wordId as Id<"words">);
 
@@ -225,6 +263,7 @@ export const deleteWord = authMutation
 /** Restore a soft-deleted word */
 export const restoreWord = authMutation
   .input(z.object({ wordId: zid("words") }))
+  .output(successSchema)
   .mutation(async ({ ctx, input }) => {
     const word = await ctx.table("words").get(input.wordId as Id<"words">);
 
@@ -265,6 +304,7 @@ export const recordPractice = authMutation
       timeSpent: z.number().min(0),
     })
   )
+  .output(practiceRecordedSchema)
   .mutation(async ({ ctx, input }) => {
     const { wordId, correct, timeSpent } = input;
 
@@ -318,6 +358,7 @@ export const recordPractice = authMutation
 /** Reset practice stats for a word */
 export const resetWordStats = authMutation
   .input(z.object({ wordId: zid("words") }))
+  .output(successSchema)
   .mutation(async ({ ctx, input }) => {
     const word = await ctx.table("words").get(input.wordId as Id<"words">);
 

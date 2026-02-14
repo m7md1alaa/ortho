@@ -33,17 +33,66 @@ export declare const api: {
       "mutation",
       "public",
       { description?: string; name: string },
-      any
+      { id: any }
     >;
-    deleteList: FunctionReference<"mutation", "public", { listId: any }, any>;
-    getListById: FunctionReference<"query", "public", { listId: any }, any>;
-    getUserLists: FunctionReference<"query", "public", {}, any>;
-    restoreList: FunctionReference<"mutation", "public", { listId: any }, any>;
+    deleteList: FunctionReference<
+      "mutation",
+      "public",
+      { listId: any },
+      { success: true }
+    >;
+    getListById: FunctionReference<
+      "query",
+      "public",
+      { listId: any },
+      {
+        createdAt: number;
+        description?: string;
+        id: any;
+        name: string;
+        totalPracticeTime: number;
+        updatedAt: number;
+        words: Array<{
+          correctCount: number;
+          createdAt: number;
+          definition?: string;
+          difficulty: "easy" | "medium" | "hard";
+          example?: string;
+          id: any;
+          incorrectCount: number;
+          lastPracticed?: number;
+          nextReview?: number;
+          streak: number;
+          updatedAt: number;
+          word: string;
+        }>;
+      }
+    >;
+    getUserLists: FunctionReference<
+      "query",
+      "public",
+      {},
+      Array<{
+        createdAt: number;
+        description?: string;
+        id: any;
+        name: string;
+        totalPracticeTime: number;
+        updatedAt: number;
+        wordCount: number;
+      }>
+    >;
+    restoreList: FunctionReference<
+      "mutation",
+      "public",
+      { listId: any },
+      { success: true }
+    >;
     updateList: FunctionReference<
       "mutation",
       "public",
       { description?: string; listId: any; name?: string },
-      any
+      { success: true }
     >;
   };
   words: {
@@ -57,7 +106,7 @@ export declare const api: {
         listId: any;
         word: string;
       },
-      any
+      { id: any }
     >;
     bulkImportWords: FunctionReference<
       "mutation",
@@ -71,28 +120,51 @@ export declare const api: {
           word: string;
         }>;
       },
-      any
+      { count: number }
     >;
-    deleteWord: FunctionReference<"mutation", "public", { wordId: any }, any>;
+    deleteWord: FunctionReference<
+      "mutation",
+      "public",
+      { wordId: any },
+      { success: true }
+    >;
     getWordsByListId: FunctionReference<
       "query",
       "public",
       { listId: any },
-      any
+      Array<{
+        correctCount: number;
+        createdAt: number;
+        definition?: string;
+        difficulty: "easy" | "medium" | "hard";
+        example?: string;
+        id: any;
+        incorrectCount: number;
+        lastPracticed?: number;
+        nextReview?: number;
+        streak: number;
+        updatedAt: number;
+        word: string;
+      }>
     >;
     recordPractice: FunctionReference<
       "mutation",
       "public",
       { correct: boolean; timeSpent: number; wordId: any },
-      any
+      { nextReview?: number; streak: number; success: true }
     >;
     resetWordStats: FunctionReference<
       "mutation",
       "public",
       { wordId: any },
-      any
+      { success: true }
     >;
-    restoreWord: FunctionReference<"mutation", "public", { wordId: any }, any>;
+    restoreWord: FunctionReference<
+      "mutation",
+      "public",
+      { wordId: any },
+      { success: true }
+    >;
     updateWord: FunctionReference<
       "mutation",
       "public",
@@ -103,7 +175,7 @@ export declare const api: {
         word?: string;
         wordId: any;
       },
-      any
+      { success: true }
     >;
   };
 };

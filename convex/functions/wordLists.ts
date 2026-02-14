@@ -3,39 +3,87 @@ import { CRPCError } from "better-convex/server";
 import { zid } from "convex-helpers/server/zod3";
 import { z } from "zod";
 import { authMutation, authQuery } from "../lib/crpc";
+import { difficultySchema } from "../shared/schemas";
+import type { Difficulty } from "../shared/schemas";
+
+// =============================================================================
+// Output Schemas
+// =============================================================================
+
+const wordListSchema = z.object({
+  id: zid("wordLists"),
+  name: z.string(),
+  description: z.string().optional(),
+  totalPracticeTime: z.number(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+  wordCount: z.number(),
+});
+
+const wordSchema = z.object({
+	id: zid("words"),
+	word: z.string(),
+	definition: z.string().optional(),
+	example: z.string().optional(),
+	difficulty: difficultySchema,
+	lastPracticed: z.number().optional(),
+	nextReview: z.number().optional(),
+	correctCount: z.number(),
+	incorrectCount: z.number(),
+	streak: z.number(),
+	createdAt: z.number(),
+	updatedAt: z.number(),
+});
+
+const wordListWithWordsSchema = z.object({
+  id: zid("wordLists"),
+  name: z.string(),
+  description: z.string().optional(),
+  totalPracticeTime: z.number(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+  words: z.array(wordSchema),
+});
+
+const successSchema = z.object({ success: z.literal(true) });
+
+const listCreatedSchema = z.object({ id: zid("wordLists") });
 
 // =============================================================================
 // Queries
 // =============================================================================
 
 /** Get all word lists for the current user with word counts */
-export const getUserLists = authQuery.query(async ({ ctx }) => {
-  const lists = await ctx
-    .table("wordLists", "userId", (q) => q.eq("userId", ctx.userId))
-    .filter((q) => q.eq(q.field("deletionTime"), undefined))
-    .order("desc");
+export const getUserLists = authQuery
+  .output(z.array(wordListSchema))
+  .query(async ({ ctx }) => {
+    const lists = await ctx
+      .table("wordLists", "userId", (q) => q.eq("userId", ctx.userId))
+      .filter((q) => q.eq(q.field("deletionTime"), undefined))
+      .order("desc");
 
-  // Map to include word count using edge traversal
-  return Promise.all(
-    lists.map(async (list) => {
-      const words = await list.edge("words");
-      const activeWords = words.filter((w) => w.deletionTime === undefined);
-      return {
-        id: list._id,
-        name: list.name,
-        description: list.description,
-        totalPracticeTime: list.totalPracticeTime,
-        createdAt: list.createdAt,
-        updatedAt: list.updatedAt,
-        wordCount: activeWords.length,
-      };
-    })
-  );
-});
+    // Map to include word count using edge traversal
+    return Promise.all(
+      lists.map(async (list) => {
+        const words = await list.edge("words");
+        const activeWords = words.filter((w) => w.deletionTime === undefined);
+        return {
+          id: list._id,
+          name: list.name,
+          description: list.description,
+          totalPracticeTime: list.totalPracticeTime,
+          createdAt: list.createdAt,
+          updatedAt: list.updatedAt,
+          wordCount: activeWords.length,
+        };
+      })
+    );
+  });
 
 /** Get a single list by ID with all its words */
 export const getListById = authQuery
   .input(z.object({ listId: zid("wordLists") }))
+  .output(wordListWithWordsSchema)
   .query(async ({ ctx, input }) => {
     const list = await ctx
       .table("wordLists")
@@ -65,7 +113,7 @@ export const getListById = authQuery
         word: w.word,
         definition: w.definition,
         example: w.example,
-        difficulty: w.difficulty,
+        difficulty: w.difficulty as Difficulty,
         lastPracticed: w.lastPracticed,
         nextReview: w.nextReview,
         correctCount: w.correctCount,
@@ -98,6 +146,7 @@ export const createList = authMutation
       description: z.string().optional(),
     })
   )
+  .output(listCreatedSchema)
   .mutation(async ({ ctx, input }) => {
     const listId = await ctx.table("wordLists").insert({
       ...input,
@@ -119,6 +168,7 @@ export const updateList = authMutation
       description: z.string().optional(),
     })
   )
+  .output(successSchema)
   .mutation(async ({ ctx, input }) => {
     const { listId, ...updates } = input;
     const list = await ctx.table("wordLists").get(listId as Id<"wordLists">);
@@ -148,6 +198,7 @@ export const updateList = authMutation
 /** Soft delete a word list (cascades to words) */
 export const deleteList = authMutation
   .input(z.object({ listId: zid("wordLists") }))
+  .output(successSchema)
   .mutation(async ({ ctx, input }) => {
     const list = await ctx
       .table("wordLists")
@@ -176,6 +227,7 @@ export const deleteList = authMutation
 /** Restore a soft-deleted list */
 export const restoreList = authMutation
   .input(z.object({ listId: zid("wordLists") }))
+  .output(successSchema)
   .mutation(async ({ ctx, input }) => {
     const list = await ctx
       .table("wordLists")
