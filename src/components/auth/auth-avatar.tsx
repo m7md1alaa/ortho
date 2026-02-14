@@ -10,7 +10,7 @@ export default function AuthAvatar() {
     return null;
   }
 
-  const userName = currentUser?.name || currentUser?.email?.split("@")[0];
+  const userName = currentUser?.name || currentUser?.email?.split("@")[0] || "User";
   const imageUrl =
     currentUser?.image ||
     `https://avatar.vercel.sh/${encodeURIComponent(userName)}?size=60`;
@@ -19,7 +19,7 @@ export default function AuthAvatar() {
     <div className="flex items-center gap-4">
       <Avatar>
         <AvatarImage src={imageUrl} />
-        <AvatarFallback>{userName?.[0]}</AvatarFallback>
+        <AvatarFallback>{userName[0]}</AvatarFallback>
       </Avatar>
     </div>
   );

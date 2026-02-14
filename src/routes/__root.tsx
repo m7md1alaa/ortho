@@ -72,14 +72,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     if (token) {
       ctx.context.convexQueryClient.serverHttpClient?.setAuth(token);
     }
+
     let currentUser: CurrentUser | null = null;
     if (token) {
       try {
         currentUser = await getCurrentUser();
       } catch {
-        // Error fetching user, will be handled client-side
+        // User might not be authenticated yet, will be handled client-side
       }
     }
+
     return {
       isAuthenticated: !!token && !!currentUser,
       currentUser,

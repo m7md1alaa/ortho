@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { runServerCall } from "@/lib/convex/server";
+import { runServerCall } from "@/lib/convex/server.server";
 
 export const getCurrentUser = createServerFn({ method: "GET" }).handler(
   async () => {

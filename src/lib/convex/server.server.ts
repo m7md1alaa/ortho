@@ -1,3 +1,5 @@
+"use server";
+
 import { api } from "@convex/api";
 import { meta } from "@convex/meta";
 import { getRequestHeaders } from "@tanstack/react-start/server";
