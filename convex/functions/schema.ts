@@ -61,6 +61,11 @@ const schema = defineEntSchema({
     name: v.string(),
     description: v.optional(v.string()),
     totalPracticeTime: v.number(),
+    isPublic: v.boolean(),
+    isSystem: v.boolean(),
+    createdBy: v.id("user"),
+    category: v.optional(v.string()),
+    difficulty: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

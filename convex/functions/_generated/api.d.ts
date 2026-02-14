@@ -68,6 +68,38 @@ export declare const api: {
         }>;
       }
     >;
+    getPublicListById: FunctionReference<
+      "query",
+      "public",
+      { listId: Id<"wordLists"> },
+      {
+        category?: string;
+        createdAt: number;
+        description?: string;
+        difficulty?: string;
+        id: Id<"wordLists">;
+        name: string;
+        totalPracticeTime: number;
+        updatedAt: number;
+        words: Array<{ id: Id<"words">; word: string }>;
+      }
+    >;
+    getPublicLists: FunctionReference<
+      "query",
+      "public",
+      {},
+      Array<{
+        category?: string;
+        createdAt: number;
+        description?: string;
+        difficulty?: string;
+        id: Id<"wordLists">;
+        name: string;
+        totalPracticeTime: number;
+        updatedAt: number;
+        wordCount: number;
+      }>
+    >;
     getUserLists: FunctionReference<
       "query",
       "public",

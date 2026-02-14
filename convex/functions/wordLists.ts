@@ -2,7 +2,7 @@ import type { Id } from "@convex/dataModel";
 import { CRPCError } from "better-convex/server";
 import { zid } from "convex-helpers/server/zod4";
 import { z } from "zod";
-import { authMutation, authQuery } from "../lib/crpc";
+import { authMutation, authQuery, publicQuery } from "../lib/crpc";
 import type { Difficulty } from "../shared/schemas";
 import { difficultySchema } from "../shared/schemas";
 
@@ -58,8 +58,14 @@ export const getUserLists = authQuery
   .output(z.array(wordListSchema))
   .query(async ({ ctx }) => {
     const lists = await ctx
-      .table("wordLists", "userId", (q) => q.eq("userId", ctx.userId))
-      .filter((q) => q.eq(q.field("deletionTime"), undefined))
+      .table("wordLists")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("isSystem"), false),
+          q.eq(q.field("createdBy"), ctx.userId),
+          q.eq(q.field("deletionTime"), undefined)
+        )
+      )
       .order("desc");
 
     // Map to include word count using edge traversal
@@ -151,6 +157,9 @@ export const createList = authMutation
     const listId = await ctx.table("wordLists").insert({
       ...input,
       userId: ctx.userId,
+      createdBy: ctx.userId,
+      isPublic: false,
+      isSystem: false,
       totalPracticeTime: 0,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -257,4 +266,115 @@ export const restoreList = authMutation
     await list.patch({ deletionTime: undefined });
 
     return { success: true };
+  });
+
+// =============================================================================
+// Public Queries (No Auth Required)
+// =============================================================================
+
+const publicWordListSchema = z.object({
+  id: zid("wordLists"),
+  name: z.string(),
+  description: z.string().optional(),
+  category: z.string().optional(),
+  difficulty: z.string().optional(),
+  totalPracticeTime: z.number(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+  wordCount: z.number(),
+});
+
+const publicWordListWithWordsSchema = z.object({
+  id: zid("wordLists"),
+  name: z.string(),
+  description: z.string().optional(),
+  category: z.string().optional(),
+  difficulty: z.string().optional(),
+  totalPracticeTime: z.number(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+  words: z.array(
+    z.object({
+      id: zid("words"),
+      word: z.string(),
+    })
+  ),
+});
+
+/** Get all public system lists */
+export const getPublicLists = publicQuery
+  .output(z.array(publicWordListSchema))
+  .query(async ({ ctx }) => {
+    const lists = await ctx
+      .table("wordLists")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("isPublic"), true),
+          q.eq(q.field("isSystem"), true),
+          q.eq(q.field("deletionTime"), undefined)
+        )
+      )
+      .order("desc");
+
+    return Promise.all(
+      lists.map(async (list) => {
+        const words = await list.edge("words");
+        const activeWords = words.filter((w) => w.deletionTime === undefined);
+        return {
+          id: list._id,
+          name: list.name,
+          description: list.description,
+          category: list.category,
+          difficulty: list.difficulty,
+          totalPracticeTime: list.totalPracticeTime,
+          createdAt: list.createdAt,
+          updatedAt: list.updatedAt,
+          wordCount: activeWords.length,
+        };
+      })
+    );
+  });
+
+/** Get a single public list by ID */
+export const getPublicListById = publicQuery
+  .input(z.object({ listId: zid("wordLists") }))
+  .output(publicWordListWithWordsSchema)
+  .query(async ({ ctx, input }) => {
+    const list = await ctx
+      .table("wordLists")
+      .get(input.listId as Id<"wordLists">);
+
+    if (!list || list.deletionTime !== undefined) {
+      throw new CRPCError({
+        code: "NOT_FOUND",
+        message: "List not found",
+      });
+    }
+
+    if (!(list.isPublic && list.isSystem)) {
+      throw new CRPCError({
+        code: "FORBIDDEN",
+        message: "This list is not public",
+      });
+    }
+
+    const words = await list.edge("words");
+    const activeWords = words
+      .filter((w) => w.deletionTime === undefined)
+      .map((w) => ({
+        id: w._id,
+        word: w.word,
+      }));
+
+    return {
+      id: list._id,
+      name: list.name,
+      description: list.description,
+      category: list.category,
+      difficulty: list.difficulty,
+      totalPracticeTime: list.totalPracticeTime,
+      createdAt: list.createdAt,
+      updatedAt: list.updatedAt,
+      words: activeWords,
+    };
   });

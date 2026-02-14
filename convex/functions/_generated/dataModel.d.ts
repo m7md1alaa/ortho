@@ -178,9 +178,14 @@ export type DataModel = {
   };
   wordLists: {
     document: {
+      category?: string;
       createdAt: number;
+      createdBy: Id<"user">;
       deletionTime?: number;
       description?: string;
+      difficulty?: string;
+      isPublic: boolean;
+      isSystem: boolean;
       name: string;
       totalPracticeTime: number;
       updatedAt: number;
@@ -191,9 +196,14 @@ export type DataModel = {
     fieldPaths:
       | "_creationTime"
       | "_id"
+      | "category"
       | "createdAt"
+      | "createdBy"
       | "deletionTime"
       | "description"
+      | "difficulty"
+      | "isPublic"
+      | "isSystem"
       | "name"
       | "totalPracticeTime"
       | "updatedAt"

@@ -10,6 +10,8 @@ export const meta = {
     createList: { auth: 'required', type: 'mutation' },
     deleteList: { auth: 'required', type: 'mutation' },
     getListById: { auth: 'required', type: 'query' },
+    getPublicListById: { type: 'query' },
+    getPublicLists: { type: 'query' },
     getUserLists: { auth: 'required', type: 'query' },
     restoreList: { auth: 'required', type: 'mutation' },
     updateList: { auth: 'required', type: 'mutation' },
