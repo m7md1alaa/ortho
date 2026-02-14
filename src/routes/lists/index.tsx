@@ -1,27 +1,16 @@
+import type { ApiOutputs } from "@convex/types";
 import { useForm } from "@tanstack/react-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
 import { Authenticated, useAuth } from "better-convex/react";
-import {
-  ArrowRight,
-  BookOpen,
-  Clock,
-  Plus,
-  Target,
-  Trash2,
-} from "lucide-react";
+import { ArrowRight, BookOpen, Plus, Trash2 } from "lucide-react";
 import { useEffect, useId } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { addWordList, deleteWordList, store } from "@/store";
-import type { Word, WordList } from "@/types";
-
-export const Route = createFileRoute("/lists/")({
-  component: ListsPage,
-});
+import { useCRPC } from "@/lib/convex/crpc";
 
 const listFormSchema = z.object({
   name: z.string().min(1, "List name is required"),
@@ -31,9 +20,35 @@ const listFormSchema = z.object({
 function ListsPage() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
-  const wordLists = useStore(store, (state) => state.wordLists);
+  const crpc = useCRPC();
+  const queryClient = useQueryClient();
+
   const nameId = useId();
   const descriptionId = useId();
+
+  const { data: wordLists, isPending } = useQuery<
+    ApiOutputs["wordLists"]["getUserLists"]
+  >(crpc.wordLists.getUserLists.queryOptions({}));
+
+  const createList = useMutation(
+    crpc.wordLists.createList.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(
+          crpc.wordLists.getUserLists.queryFilter()
+        );
+      },
+    })
+  );
+
+  const deleteList = useMutation(
+    crpc.wordLists.deleteList.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(
+          crpc.wordLists.getUserLists.queryFilter()
+        );
+      },
+    })
+  );
 
   useEffect(() => {
     if (!(isLoading || isAuthenticated)) {
@@ -50,11 +65,9 @@ function ListsPage() {
       onSubmit: listFormSchema,
     },
     onSubmit: ({ value }) => {
-      addWordList({
+      createList.mutate({
         name: value.name,
         description: value.description,
-        words: [],
-        totalPracticeTime: 0,
       });
       form.reset();
     },
@@ -138,22 +151,15 @@ function ListsPage() {
             </div>
 
             <div className="lg:col-span-2">
-              {wordLists.length === 0 ? (
+              {isPending || !wordLists ? (
                 <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
                   <BookOpen className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
                   <h3 className="mb-2 font-medium text-xl text-zinc-300">
-                    No lists yet
+                    Loading...
                   </h3>
-                  <p className="text-zinc-500">
-                    Create your first word list to start practicing
-                  </p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {wordLists.map((list) => (
-                    <ListCard key={list.id} list={list} />
-                  ))}
-                </div>
+                <ListContent onDelete={deleteList} wordLists={wordLists} />
               )}
             </div>
           </div>
@@ -163,28 +169,14 @@ function ListsPage() {
   );
 }
 
-function ListCard({ list }: { list: WordList }) {
-  const totalWords = list.words.length;
-  const masteredWords = list.words.filter((w) => w.streak >= 5).length;
-  const accuracy =
-    totalWords > 0
-      ? Math.round(
-          (list.words.reduce(
-            (acc: number, w: Word) => acc + w.correctCount,
-            0
-          ) /
-            Math.max(
-              list.words.reduce(
-                (acc: number, w: Word) =>
-                  acc + w.correctCount + w.incorrectCount,
-                0
-              ),
-              1
-            )) *
-            100
-        )
-      : 0;
-
+function ListCard({
+  list,
+  onDelete,
+}: {
+  list: ApiOutputs["wordLists"]["getUserLists"][number];
+  onDelete: () => void;
+}) {
+  const totalWords = list.wordCount;
   return (
     <div className="group rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700">
       <div className="mb-4 flex items-start justify-between">
@@ -202,7 +194,7 @@ function ListCard({ list }: { list: WordList }) {
         </div>
         <Button
           className="opacity-0 hover:text-destructive group-hover:opacity-100"
-          onClick={() => deleteWordList(list.id)}
+          onClick={onDelete}
           size="icon-sm"
           title="Delete list"
           variant="ghost"
@@ -215,14 +207,6 @@ function ListCard({ list }: { list: WordList }) {
         <div className="flex items-center gap-2">
           <BookOpen className="h-4 w-4" />
           <span>{totalWords} words</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Target className="h-4 w-4" />
-          <span>{masteredWords} mastered</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4" />
-          <span>{accuracy}% accuracy</span>
         </div>
       </div>
 
@@ -246,3 +230,41 @@ function ListCard({ list }: { list: WordList }) {
     </div>
   );
 }
+
+function ListContent({
+  wordLists,
+  onDelete,
+}: {
+  wordLists: ApiOutputs["wordLists"]["getUserLists"];
+  onDelete: ReturnType<typeof useMutation>;
+}) {
+  if (wordLists.length === 0) {
+    return (
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
+        <BookOpen className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
+        <h3 className="mb-2 font-medium text-xl text-zinc-300">No lists yet</h3>
+        <p className="text-zinc-500">
+          Create your first word list to start practicing
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {wordLists.map(
+        (list: ApiOutputs["wordLists"]["getUserLists"][number]) => (
+          <ListCard
+            key={list.id}
+            list={list}
+            onDelete={() => onDelete.mutate({ listId: list.id })}
+          />
+        )
+      )}
+    </div>
+  );
+}
+
+export const Route = createFileRoute("/lists/")({
+  component: ListsPage,
+});

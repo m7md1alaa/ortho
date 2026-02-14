@@ -1,5 +1,6 @@
+import type { ApiOutputs } from "@convex/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
 import { Brain, Plus, Upload } from "lucide-react";
 import { useState } from "react";
 import { BulkImportModal } from "@/components/BulkImportModal";
@@ -9,14 +10,11 @@ import { ListStats } from "@/components/lists/ListStats";
 import { WordCard } from "@/components/lists/WordCard";
 import { WordForm } from "@/components/lists/WordForm";
 import { Button } from "@/components/ui/button";
-import {
-  addWord,
-  deleteWord,
-  store,
-  updateWord,
-  updateWordList,
-} from "@/store";
-import type { WordList } from "@/types";
+import { useCRPC } from "@/lib/convex/crpc";
+import type { Difficulty, Word } from "@/types/types";
+import { asId } from "@/types/types";
+
+type ListWithWords = ApiOutputs["wordLists"]["getListById"];
 
 export const Route = createFileRoute("/lists/$listId")({
   component: ListDetailPage,
@@ -24,11 +22,82 @@ export const Route = createFileRoute("/lists/$listId")({
 
 function ListDetailPage() {
   const { listId } = useParams({ from: "/lists/$listId" });
-  const wordLists = useStore(store, (state) => state.wordLists);
-  const list = wordLists.find((l) => l.id === listId);
+  const crpc = useCRPC();
+  const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
+  const typedListId = asId<"wordLists">(listId);
+
+  // Fetch list data
+  const {
+    data: list,
+    isPending,
+    error,
+  } = useQuery(
+    crpc.wordLists.getListById.queryOptions({ listId: typedListId })
+  );
+
+  // Setup mutations
+  const updateListMutation = useMutation(
+    crpc.wordLists.updateList.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(crpc.wordLists.getListById.queryFilter());
+      },
+    })
+  );
+
+  const updateWordMutation = useMutation(
+    crpc.words.updateWord.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(crpc.wordLists.getListById.queryFilter());
+      },
+    })
+  );
+
+  const deleteWordMutation = useMutation(
+    crpc.words.deleteWord.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(crpc.wordLists.getListById.queryFilter());
+      },
+    })
+  );
+
+  const addWordMutation = useMutation(
+    crpc.words.addWord.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(crpc.wordLists.getListById.queryFilter());
+      },
+    })
+  );
+
+  const bulkImportMutation = useMutation(
+    crpc.words.bulkImportWords.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries(crpc.wordLists.getListById.queryFilter());
+      },
+    })
+  );
+
+  // Loading state
+  if (isPending) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black text-zinc-100">
+        <div className="text-zinc-400">Loading...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black text-zinc-100">
+        <div className="text-red-400">Failed to load list</div>
+      </div>
+    );
+  }
+
+  // Not found state
   if (!list) {
     return <ListNotFound />;
   }
@@ -39,7 +108,9 @@ function ListDetailPage() {
         <ListHeader
           description={list.description}
           name={list.name}
-          onUpdate={(data) => updateWordList(listId, data)}
+          onUpdate={(data) =>
+            updateListMutation.mutate({ listId: typedListId, ...data })
+          }
         />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -49,36 +120,51 @@ function ListDetailPage() {
             onAddToggle={() => setIsAdding(!isAdding)}
             onImportOpen={() => setIsImportModalOpen(true)}
             onWordAdd={(data) => {
-              addWord(listId, {
+              addWordMutation.mutate({
+                listId: typedListId,
                 ...data,
-                correctCount: 0,
-                incorrectCount: 0,
-                streak: 0,
               });
               setIsAdding(false);
             }}
           />
 
           <WordsList
-            onWordDelete={(wordId) => deleteWord(listId, wordId)}
-            onWordUpdate={(wordId, data) => updateWord(listId, wordId, data)}
+            onWordDelete={(wordId) =>
+              deleteWordMutation.mutate({ wordId: asId<"words">(wordId) })
+            }
+            onWordUpdate={(wordId, data) =>
+              updateWordMutation.mutate({
+                wordId: asId<"words">(wordId),
+                ...data,
+              })
+            }
             words={list.words}
           />
         </div>
       </div>
 
       <BulkImportModal
-        existingWords={list?.words.map((w) => w.word) || []}
+        existingWords={list.words.map((w: Word) => w.word)}
         isOpen={isImportModalOpen}
-        listId={listId}
         onClose={() => setIsImportModalOpen(false)}
+        onImport={(words) =>
+          bulkImportMutation.mutateAsync({
+            listId: typedListId,
+            words: words.map((w) => ({
+              ...w,
+              definition: undefined,
+              example: undefined,
+              difficulty: "medium",
+            })),
+          })
+        }
       />
     </div>
   );
 }
 
 interface SidebarProps {
-  list: WordList;
+  list: ListWithWords;
   isAdding: boolean;
   onAddToggle: () => void;
   onImportOpen: () => void;
@@ -86,7 +172,7 @@ interface SidebarProps {
     word: string;
     definition: string;
     example: string;
-    difficulty: "easy" | "medium" | "hard";
+    difficulty: Difficulty;
   }) => void;
 }
 
@@ -131,10 +217,15 @@ function Sidebar({
 }
 
 interface WordListProps {
-  words: WordList["words"];
+  words: Word[];
   onWordUpdate: (
     wordId: string,
-    data: Partial<WordList["words"][number]>
+    data: Partial<{
+      word: string;
+      definition?: string;
+      example?: string;
+      difficulty: Difficulty;
+    }>
   ) => void;
   onWordDelete: (wordId: string) => void;
 }
