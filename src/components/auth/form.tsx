@@ -50,7 +50,7 @@ export default function AuthComponent() {
     })
   );
 
-  const handleSocialSignIn = async (provider: "google" | "microsoft") => {
+  const handleSocialSignIn = async (provider: "google") => {
     try {
       await signInSocial.mutateAsync({
         provider,
@@ -128,7 +128,7 @@ export default function AuthComponent() {
               </p>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="mt-6 gap-3">
               <Button
                 disabled={isLoading}
                 onClick={() => handleSocialSignIn("google")}
@@ -161,30 +161,6 @@ export default function AuthComponent() {
                   />
                 </svg>
                 <span>Google</span>
-              </Button>
-              <Button
-                disabled={isLoading}
-                onClick={() => handleSocialSignIn("microsoft")}
-                type="button"
-                variant="outline"
-              >
-                <svg
-                  aria-hidden="true"
-                  height="1em"
-                  viewBox="0 0 256 256"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <title>Microsoft</title>
-                  <path d="M121.666 121.666H0V0h121.666z" fill="#f1511b" />
-                  <path d="M256 121.666H134.335V0H256z" fill="#80cc28" />
-                  <path
-                    d="M121.663 256.002H0V134.336h121.663z"
-                    fill="#00adef"
-                  />
-                  <path d="M256 256.002H134.335V134.336H256z" fill="#fbbc09" />
-                </svg>
-                <span>Microsoft</span>
               </Button>
             </div>
 
@@ -355,7 +331,7 @@ export default function AuthComponent() {
             <p className="text-sm">Welcome back! Sign in to continue</p>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-6 grid gap-3">
             <Button
               disabled={isLoading}
               onClick={() => handleSocialSignIn("google")}
@@ -388,27 +364,6 @@ export default function AuthComponent() {
                 />
               </svg>
               <span>Google</span>
-            </Button>
-            <Button
-              disabled={isLoading}
-              onClick={() => handleSocialSignIn("microsoft")}
-              type="button"
-              variant="outline"
-            >
-              <svg
-                aria-hidden="true"
-                height="1em"
-                viewBox="0 0 256 256"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <title>Microsoft</title>
-                <path d="M121.666 121.666H0V0h121.666z" fill="#f1511b" />
-                <path d="M256 121.666H134.335V0H256z" fill="#80cc28" />
-                <path d="M121.663 256.002H0V134.336h121.663z" fill="#00adef" />
-                <path d="M256 256.002H134.335V134.336H256z" fill="#fbbc09" />
-              </svg>
-              <span>Microsoft</span>
             </Button>
           </div>
 
