@@ -3,6 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import {
   useSendOTPMutationOptions,
   useVerifyOTPMutationOptions,
 } from "@/lib/convex/auth/auth-mutations";
@@ -175,19 +181,38 @@ export function OTPSignInMode({
         >
           <otpVerifyForm.Field name="otp">
             {(field) => (
-              <FormField
-                autoComplete="one-time-code"
-                disabled={isLoading}
-                error={field.state.meta.errors[0]?.message}
-                id={field.name}
-                isTouched={field.state.meta.isTouched}
-                label="Verification Code"
-                name={field.name}
-                onBlur={field.handleBlur}
-                onChange={field.handleChange}
-                placeholder="Enter code"
-                value={field.state.value}
-              />
+              <div className="space-y-2">
+                <label
+                  className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  htmlFor="otp"
+                >
+                  Verification Code
+                </label>
+                <InputOTP
+                  containerClassName="justify-center"
+                  disabled={isLoading}
+                  id="otp"
+                  maxLength={6}
+                  onBlur={field.handleBlur}
+                  onChange={field.handleChange}
+                  value={field.state.value}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSeparator />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+                {field.state.meta.errors[0]?.message && (
+                  <p className="text-center text-destructive text-sm">
+                    {field.state.meta.errors[0]?.message}
+                  </p>
+                )}
+              </div>
             )}
           </otpVerifyForm.Field>
 
