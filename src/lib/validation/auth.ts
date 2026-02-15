@@ -46,3 +46,37 @@ export const signInSchema = z.object({
 
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
+
+/**
+ * OTP send form schema
+ */
+export const otpSendSchema = z.object({
+  email: z.email("Invalid email address").min(1, "Email is required"),
+});
+
+/**
+ * OTP verify form schema
+ */
+export const otpVerifySchema = z.object({
+  otp: z
+    .string()
+    .min(1, "Code is required")
+    .length(6, "Code must be 6 digits")
+    .regex(/^\d+$/, "Code must contain only numbers"),
+});
+
+export type OtpSendFormData = z.infer<typeof otpSendSchema>;
+export type OtpVerifyFormData = z.infer<typeof otpVerifySchema>;
+
+/**
+ * First name only schema for OTP flow
+ */
+export const firstNameSchema = z.object({
+	firstName: z
+		.string()
+		.min(1, "First name is required")
+		.min(2, "First name must be at least 2 characters")
+		.max(50, "First name must be less than 50 characters"),
+});
+
+export type FirstNameFormData = z.infer<typeof firstNameSchema>;

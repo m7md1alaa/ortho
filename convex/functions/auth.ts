@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 import { convex } from "@convex-dev/better-auth/plugins";
 import { type BetterAuthOptions, betterAuth } from "better-auth";
+import { emailOTP } from "better-auth/plugins";
 import { createApi, createClient } from "better-convex/auth";
 import type { GenericCtx } from "../lib/crpc";
 import { internalMutationWithTriggers } from "../lib/crpc";
@@ -41,6 +42,43 @@ export const createAuthOptions = (ctx: GenericCtx) =>
         jwt: {
           expirationSeconds: 60 * 60,
         },
+      }),
+      emailOTP({
+        async sendVerificationOTP({ email, otp, type }) {
+          const response = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: `Ortho <${process.env.RESEND_FROM_EMAIL}>`,
+              to: email,
+              subject:
+                type === "sign-in" ? "Your sign-in code" : "Verify your email",
+              html: `
+                <div style="font-family: sans-serif; max-width: 400px; margin: 0 auto; padding: 20px;">
+                  <h2 style="color: #333; margin-bottom: 20px;">Your verification code</h2>
+                  <p style="font-size: 32px; font-weight: bold; letter-spacing: 8px; 
+                            background: #f5f5f5; padding: 20px; text-align: center; 
+                            border-radius: 8px; margin: 20px 0; color: #000;">
+                    ${otp}
+                  </p>
+                  <p style="color: #666; margin-top: 20px;">This code expires in 5 minutes.</p>
+                  <p style="color: #999; font-size: 12px; margin-top: 30px;">If you didn't request this, you can ignore this email.</p>
+                </div>
+              `,
+            }),
+          });
+
+          if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Failed to send email: ${error}`);
+          }
+        },
+        otpLength: 6,
+        expiresIn: 300,
+        disableSignUp: false,
       }),
     ],
     session: {
