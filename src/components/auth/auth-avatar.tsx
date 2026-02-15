@@ -10,7 +10,8 @@ export default function AuthAvatar() {
     return null;
   }
 
-  const userName = currentUser?.name || currentUser?.email?.split("@")[0] || "User";
+  const userName =
+    currentUser?.name || currentUser?.email?.split("@")[0] || "User";
   const imageUrl =
     currentUser?.image ||
     `https://avatar.vercel.sh/${encodeURIComponent(userName)}?size=60`;

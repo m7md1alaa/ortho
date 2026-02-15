@@ -3,7 +3,7 @@ import { z } from "zod";
 import AuthComponent from "@/components/auth/form";
 
 const authSearchSchema = z.object({
-  mode: z.enum(["signup", "signin"]).default("signin"),
+  mode: z.enum(["signup", "signin", "otp"]).default("otp"),
 });
 
 export const Route = createFileRoute("/auth")({
