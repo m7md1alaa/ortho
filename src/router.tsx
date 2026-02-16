@@ -11,8 +11,8 @@ import { createQueryClient } from "./lib/convex/query-client";
 import { routeTree } from "./routeTree.gen";
 
 export const getRouter = () => {
-  const convexClientUrl: string | undefined | null = import.meta.env
-    .VITE_CONVEX_URL;
+  const convexClientUrl: string | undefined | null =
+    import.meta.env.VITE_CONVEX_URL || process.env.VITE_CONVEX_URL;
 
   if (!convexClientUrl) {
     console.error("VITE_CONVEX_URL is not set");
@@ -20,7 +20,8 @@ export const getRouter = () => {
   }
 
   const convex = new ConvexReactClient(convexClientUrl);
-  const convexSiteUrl = import.meta.env.VITE_CONVEX_SITE_URL;
+  const convexSiteUrl =
+    import.meta.env.VITE_CONVEX_SITE_URL || process.env.VITE_CONVEX_SITE_URL;
 
   if (!convexSiteUrl) {
     console.error("VITE_CONVEX_SITE_URL is not set");

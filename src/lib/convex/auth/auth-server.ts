@@ -1,9 +1,14 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: env */
 import { convexBetterAuthReactStart } from "@convex-dev/better-auth/react-start";
 
-const convexUrl = process.env.CONVEX_URL || import.meta.env.VITE_CONVEX_URL;
+const convexUrl =
+  process.env.CONVEX_URL ||
+  import.meta.env.VITE_CONVEX_URL ||
+  process.env.VITE_CONVEX_URL;
 const convexSiteUrl =
-  process.env.CONVEX_SITE_URL || import.meta.env.VITE_CONVEX_SITE_URL;
+  process.env.CONVEX_SITE_URL ||
+  import.meta.env.VITE_CONVEX_SITE_URL ||
+  process.env.VITE_CONVEX_SITE_URL;
 
 if (!convexUrl) {
   throw new Error("CONVEX_URL is not set");
