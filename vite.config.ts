@@ -15,8 +15,7 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
-    nitro({ preset: "cloudflare_module" }),
-    // this is the plugin that enables path aliases
+    nitro({ preset: "bun" }),
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),
