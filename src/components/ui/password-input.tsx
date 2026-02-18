@@ -1,5 +1,3 @@
-import { MAX_PASSWORD_LENGTH } from "@convex/validation";
-import { zxcvbn, zxcvbnOptions } from "@zxcvbn-ts/core";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {
   type ChangeEvent,
@@ -77,35 +75,44 @@ export function PasswordInput({
   );
 }
 
+interface ZxcvbnResult {
+  score: number;
+  feedback: { warning?: string | null };
+}
+
 export function PasswordInputStrengthChecker() {
   const [optionsLoaded, setOptionsLoaded] = useState(false);
   const [errorLoadingOptions, setErrorLoadingOptions] = useState(false);
+  const [zxcvbnModule, setZxcvbnModule] = useState<{
+    zxcvbn: (password: string) => ZxcvbnResult;
+  } | null>(null);
 
   const { password } = usePasswordInput();
   const deferredPassword = useDeferredValue(password);
-  const strengthResult = useMemo(() => {
-    if (!optionsLoaded || deferredPassword.length === 0) {
-      return { score: 0, feedback: { warning: undefined } } as const;
+  const strengthResult = useMemo<ZxcvbnResult>(() => {
+    if (!(optionsLoaded && zxcvbnModule) || deferredPassword.length === 0) {
+      return { score: 0, feedback: { warning: undefined } };
     }
 
-    return zxcvbn(deferredPassword);
-  }, [optionsLoaded, deferredPassword]);
+    return zxcvbnModule.zxcvbn(deferredPassword);
+  }, [optionsLoaded, zxcvbnModule, deferredPassword]);
 
   useEffect(() => {
     Promise.all([
+      import("@zxcvbn-ts/core"),
       import("@zxcvbn-ts/language-common"),
       import("@zxcvbn-ts/language-en"),
     ])
-      .then(([common, english]) => {
-        zxcvbnOptions.setOptions({
+      .then(([core, common, english]) => {
+        core.zxcvbnOptions.setOptions({
           translations: english.translations,
           graphs: common.adjacencyGraphs,
-          maxLength: MAX_PASSWORD_LENGTH,
           dictionary: {
             ...common.dictionary,
             ...english.dictionary,
           },
         });
+        setZxcvbnModule({ zxcvbn: core.zxcvbn });
         setOptionsLoaded(true);
       })
       .catch(() => setErrorLoadingOptions(true));
@@ -131,7 +138,7 @@ export function PasswordInputStrengthChecker() {
       case 4:
         return "Very strong";
       default:
-        throw new Error(`Invalid score: ${score satisfies never}`);
+        return "Password strength";
     }
   }
 
