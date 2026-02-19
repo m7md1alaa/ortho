@@ -63,7 +63,7 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
-    nitro({ preset: "bun" }),
+    nitro({ preset: "vercel" }),
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),
