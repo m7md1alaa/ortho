@@ -1,9 +1,15 @@
 import type { Id } from "@convex/dataModel";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { useAuth } from "better-convex/react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { PracticeCard } from "@/components/practice/PracticeCard";
 import { PracticeCardSkeleton } from "@/components/practice/PracticeCardSkeleton";
 import { ResultsScreen } from "@/components/practice/ResultsScreen";
@@ -28,7 +34,7 @@ export const Route = createFileRoute("/practice/$listId")({
       console.error("Practice loader error:", error);
       return {
         list: null,
-        error: error instanceof Error ? error.message : "Failed to load list",
+        error: null,
       };
     }
   },
@@ -38,8 +44,11 @@ function PracticePage() {
   const { listId } = useParams({ from: "/practice/$listId" });
   const loaderData = Route.useLoaderData();
   const crpc = useCRPC();
+  const navigate = useNavigate();
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  
+
+  const [hasRedirected, setHasRedirected] = useState(false);
+
   // Track if we're on the client to avoid hydration mismatches
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
@@ -56,8 +65,9 @@ function PracticePage() {
   });
 
   // Use auth data if available and we're on client, otherwise fall back to loader data
-  const list = (isClient && isAuthenticated) ? authList : loaderData?.list;
-  const isPending = isAuthLoading || (isClient && isAuthenticated && isAuthPending);
+  const list = isClient && isAuthenticated ? authList : loaderData?.list;
+  const isPending =
+    isAuthLoading || (isClient && isAuthenticated && isAuthPending);
 
   const currentWordIndex = useStore(store, (state) => state.currentWordIndex);
   const audioEnabled = useStore(store, (state) => state.audioEnabled);
@@ -85,6 +95,15 @@ function PracticePage() {
               userId: undefined as unknown as Id<"user">,
             } as Word)
     ) ?? [];
+
+  // Redirect to list page if no words and not already redirected
+  useEffect(() => {
+    if (isClient && words.length === 0 && list && !hasRedirected) {
+      setHasRedirected(true);
+      toast.error("Add some words to this list first");
+      navigate({ to: "/lists/$listId", params: { listId: list.id } });
+    }
+  }, [isClient, words.length, list, hasRedirected, navigate]);
   const [inputFocused, setInputFocused] = useState(false);
 
   const {
@@ -172,26 +191,6 @@ function PracticePage() {
             to="/lists"
           >
             ← Back to lists
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (words.length === 0) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-black text-zinc-100">
-        <div className="text-center">
-          <h1 className="mb-4 font-bold text-2xl">No words to practice</h1>
-          <p className="mb-4 text-zinc-400">
-            Add some words to this list first
-          </p>
-          <Link
-            className="text-zinc-400 transition-colors hover:text-white"
-            params={{ listId: list.id }}
-            to="/lists/$listId"
-          >
-            ← Back to list
           </Link>
         </div>
       </div>

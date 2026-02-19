@@ -10,6 +10,7 @@ import { ListStats } from "@/components/lists/ListStats";
 import { WordCard } from "@/components/lists/WordCard";
 import { WordForm } from "@/components/lists/WordForm";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCRPC } from "@/lib/convex/crpc";
 import type { Difficulty, Word } from "@/types/types";
 import { asId } from "@/types/types";
@@ -82,8 +83,26 @@ function ListDetailPage() {
   // Loading state
   if (isPending) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black text-zinc-100">
-        <div className="text-zinc-400">Loading...</div>
+      <div className="min-h-screen bg-black text-zinc-100">
+        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <Skeleton className="h-8 w-1/3" />
+            <Skeleton className="mt-2 h-4 w-1/2" />
+          </div>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+            <div className="space-y-6">
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+            <div className="space-y-3 lg:col-span-2">
+              {[...new Array(3)].map((_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: no id
+<Skeleton className="h-24 w-full" key={i} />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

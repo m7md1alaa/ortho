@@ -61,7 +61,7 @@ function HomePage() {
             <div className="animate-fade-in-up delay-300">
               <Link
                 className="group inline-flex items-center gap-3 border border-[#2a2a2c] px-6 py-4 font-mono text-[#f5f5f0] text-xs uppercase tracking-[0.2em] transition-all duration-300 hover:border-[#2d6b6b] hover:bg-[#2d6b6b]"
-                to="/lists"
+                to="/discover"
               >
                 Begin
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
