@@ -67,7 +67,7 @@ export function PracticeCard({
               {currentWordIndex + 1} / {totalWords}
             </span>
           </div>
-          <div className="h-1 overflow-hidden rounded-full bg-zinc-800">
+          <div className="h-1 overflow-hidden bg-zinc-800">
             <div
               className="h-full bg-zinc-100 transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -76,7 +76,7 @@ export function PracticeCard({
         </div>
 
         {/* Main Card */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 sm:p-12">
+        <div className="border border-zinc-800 bg-zinc-900/50 p-8 sm:p-12">
           <WordDisplay
             definition={currentWord.definition}
             example={currentWord.example}

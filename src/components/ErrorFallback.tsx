@@ -11,7 +11,7 @@ export function ErrorFallback({ error, resetError }: ErrorFallbackProps) {
     <div className="flex min-h-screen items-center justify-center bg-black px-4">
       <div className="mx-auto max-w-md text-center">
         <div className="mb-4 flex justify-center">
-          <div className="rounded-full bg-red-500/10 p-4">
+          <div className="bg-red-500/10 p-4">
             <AlertCircle className="h-12 w-12 text-red-500" />
           </div>
         </div>

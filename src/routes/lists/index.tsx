@@ -99,7 +99,7 @@ function ListsPage() {
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="lg:col-span-1">
-              <div className="sticky top-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+              <div className="sticky top-6 border border-zinc-800 bg-zinc-900/50 p-6">
                 <h2 className="mb-4 flex items-center gap-2 font-semibold text-lg">
                   <Plus className="h-5 w-5" />
                   Create New List
@@ -188,7 +188,7 @@ function ListCard({
 }) {
   const totalWords = list.wordCount;
   return (
-    <div className="group rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700">
+    <div className="group border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700">
       <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
           <Link
@@ -222,14 +222,14 @@ function ListCard({
 
       <div className="flex items-center gap-3">
         <Link
-          className="flex-1 rounded-lg bg-zinc-800 px-4 py-2 text-center font-medium text-sm text-zinc-300 transition-colors hover:bg-zinc-700"
+          className="flex-1 bg-zinc-800 px-4 py-2 text-center font-medium text-sm text-zinc-300 transition-colors hover:bg-zinc-700"
           params={{ listId: list.id }}
           to="/lists/$listId"
         >
           Edit Words
         </Link>
         <Link
-          className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-2 text-center font-medium text-black text-sm transition-colors hover:bg-white"
+          className="flex flex-1 items-center justify-center gap-2 bg-zinc-100 px-4 py-2 text-center font-medium text-black text-sm transition-colors hover:bg-white"
           params={{ listId: list.id }}
           to="/practice/$listId"
         >
@@ -250,7 +250,7 @@ function ListContent({
 }) {
   if (wordLists.length === 0) {
     return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
+      <div className="border border-zinc-800 bg-zinc-900/30 py-16 text-center">
         <BookOpen className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
         <h3 className="mb-2 font-medium text-xl text-zinc-300">No lists yet</h3>
         <p className="text-zinc-500">

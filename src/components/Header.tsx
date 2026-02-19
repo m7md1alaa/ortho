@@ -29,7 +29,7 @@ export default function Header() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 border-[#2a2a2c] border-b bg-[#0a0a0b]/90 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 border-[#2a2a2c] border-b bg-[#0a0a0b]/90 backdrop-blur-sm">
       <div className="mx-auto max-w-6xl px-6 sm:px-8 lg:px-12">
         <div className="flex h-16 items-center justify-between">
           <Link className="group flex items-center gap-3" to="/">

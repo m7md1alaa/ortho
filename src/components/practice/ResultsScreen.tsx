@@ -19,7 +19,7 @@ export function ResultsScreen({
   return (
     <div className="flex min-h-screen items-center justify-center bg-black text-zinc-100">
       <div className="mx-4 w-full max-w-md">
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 text-center">
+        <div className="border border-zinc-800 bg-zinc-900/50 p-8 text-center">
           <div className="mb-6">
             <Trophy
               className={`mx-auto h-16 w-16 ${
@@ -36,19 +36,19 @@ export function ResultsScreen({
           <p className="mb-8 text-zinc-400">Here's how you performed</p>
 
           <div className="mb-8 grid grid-cols-3 gap-4">
-            <div className="rounded-xl bg-zinc-800/50 p-4">
+            <div className="bg-zinc-800/50 p-4">
               <div className="mb-1 font-bold text-3xl text-green-400">
                 {results.correct}
               </div>
               <div className="text-sm text-zinc-500">Correct</div>
             </div>
-            <div className="rounded-xl bg-zinc-800/50 p-4">
+            <div className="bg-zinc-800/50 p-4">
               <div className="mb-1 font-bold text-3xl text-red-400">
                 {results.incorrect}
               </div>
               <div className="text-sm text-zinc-500">Incorrect</div>
             </div>
-            <div className="rounded-xl bg-zinc-800/50 p-4">
+            <div className="bg-zinc-800/50 p-4">
               <div className="mb-1 font-bold text-3xl text-zinc-400">
                 {results.skipped}
               </div>
@@ -67,7 +67,7 @@ export function ResultsScreen({
               Practice Again
             </Button>
             <Link
-              className="block w-full rounded-lg bg-zinc-800 px-6 py-3 text-center text-zinc-300 transition-colors hover:bg-zinc-700"
+              className="block w-full bg-zinc-800 px-6 py-3 text-center text-zinc-300 transition-colors hover:bg-zinc-700"
               to="/lists"
             >
               Back to Lists

@@ -16,11 +16,7 @@ export function WordDisplay({
 }: WordDisplayProps) {
   return (
     <div className="mb-8 text-center">
-      <Button
-        className="mb-6 rounded-full"
-        onClick={onPlayAudio}
-        variant="secondary"
-      >
+      <Button className="mb-6" onClick={onPlayAudio} variant="secondary">
         <Volume2 className="h-5 w-5" />
         <span>Listen</span>
         <span className="text-muted-foreground text-sm">(Ctrl + Space)</span>

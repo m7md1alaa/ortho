@@ -60,7 +60,7 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
 
   if (isEditing) {
     return (
-      <div className="group rounded-xl border border-zinc-700 bg-zinc-900/50 p-4">
+      <div className="group border border-zinc-700 bg-zinc-900/50 p-4">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <span className="font-mono text-sm text-zinc-600">#{index}</span>
@@ -166,7 +166,7 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
   }
 
   return (
-    <div className="group rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 transition-all hover:border-zinc-700">
+    <div className="group border border-zinc-800 bg-zinc-900/50 p-4 transition-all hover:border-zinc-700">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="mb-2 flex items-center gap-3">
@@ -194,7 +194,7 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
 
           <div className="flex items-center gap-4 text-sm">
             <span
-              className={`rounded px-2 py-1 font-medium text-xs ${getDifficultyColor(
+              className={`px-2 py-1 font-medium text-xs ${getDifficultyColor(
                 word.difficulty
               )}`}
             >

@@ -14,7 +14,7 @@ export function PracticeCardSkeleton() {
         </div>
 
         {/* Main Card Skeleton */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 sm:p-12">
+        <div className="border border-zinc-800 bg-zinc-900/50 p-8 sm:p-12">
           {/* Word Display Skeleton */}
           <div className="mb-8 space-y-4">
             <Skeleton className="h-12 w-3/4" />

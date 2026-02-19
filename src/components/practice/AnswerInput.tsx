@@ -55,7 +55,7 @@ export function AnswerInput({
           autoComplete="off"
           autoCorrect="off"
           className={cn(
-            "w-full rounded-xl border-2 bg-zinc-800 px-6 py-4 text-center font-medium text-2xl transition-all focus:outline-none",
+            "w-full border-2 bg-zinc-800 px-6 py-4 text-center font-medium text-2xl transition-all focus:outline-none",
             borderClass
           )}
           disabled={showAnswer}
@@ -106,7 +106,7 @@ export function AnswerInput({
       )}
 
       {showAnswer && !hasAnsweredCorrectly && (
-        <div className="mt-4 rounded-lg border border-red-900/50 bg-red-900/20 p-4">
+        <div className="mt-4 border border-red-900/50 bg-red-900/20 p-4">
           <p className="text-center text-red-400">
             Correct spelling: <span className="font-bold">{correctWord}</span>
           </p>

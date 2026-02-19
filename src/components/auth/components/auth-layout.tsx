@@ -22,7 +22,7 @@ export function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <section className="flex min-h-screen bg-black px-4 py-16 md:py-32">
-      <div className="m-auto h-fit w-full max-w-sm rounded-[calc(var(--radius)+.125rem)] border bg-card p-0.5 shadow-md dark:[--color-muted:var(--color-zinc-900)]">
+      <div className="m-auto h-fit w-full max-w-sm border bg-card p-0.5 shadow-md dark:[--color-muted:var(--color-zinc-900)]">
         <div className="p-8 pb-6">
           <div>
             <a aria-label="go home" href="/">
@@ -45,11 +45,7 @@ export function AuthLayout({
           {children}
         </div>
 
-        {footer && (
-          <div className="rounded-[calc(var(--radius))] border bg-muted p-3">
-            {footer}
-          </div>
-        )}
+        {footer && <div className="border bg-muted p-3">{footer}</div>}
       </div>
     </section>
   );

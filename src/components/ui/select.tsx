@@ -56,9 +56,9 @@ function SelectTrigger({
         "disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border-custom",
 
         // Size variants - improved spacing
-        "data-[size=sm]:h-9 data-[size=sm]:rounded-md data-[size=sm]:px-3 data-[size=sm]:py-1.5 data-[size=sm]:text-sm",
-        "data-[size=default]:h-11 data-[size=default]:rounded-lg data-[size=default]:px-4 data-[size=default]:py-2.5",
-        "data-[size=lg]:h-13 data-[size=lg]:rounded-xl data-[size=lg]:px-5 data-[size=lg]:py-3 data-[size=lg]:text-base",
+        "data-[size=sm]:h-9 data-[size=sm]:px-3 data-[size=sm]:py-1.5 data-[size=sm]:text-sm",
+        "data-[size=default]: data-[size=default]:h-11 data-[size=default]:px-4 data-[size=default]:py-2.5",
+        "data-[size=lg]:h-13 data-[size=lg]:data-[size=lg]:px-5 data-[size=lg]:py-3 data-[size=lg]:text-base",
 
         // Icon spacing
         "gap-3",
@@ -115,7 +115,7 @@ function SelectContent({
             "bg-bg-secondary/95 backdrop-blur-xl",
             "border border-border-light shadow-2xl shadow-black/40",
             "font-body text-text-primary",
-            "overflow-hidden rounded-xl",
+            "overflow-hidden",
 
             // Editorial paper texture overlay
             'viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E\')] before:pointer-events-none before:absolute before:inset-0 before:bg-[url(\'data:image/svg+xml,%3Csvg before:opacity-[0.02]',
@@ -183,7 +183,7 @@ function SelectItem({
       className={cn(
         // Base styles
         "relative flex w-full items-center",
-        "mx-2 rounded-md px-4 py-2.5",
+        "mx-2 px-4 py-2.5",
         "text-[15px] leading-relaxed tracking-wide",
         "font-body text-text-primary",
         "cursor-pointer select-none outline-none",

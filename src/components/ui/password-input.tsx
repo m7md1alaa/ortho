@@ -166,7 +166,7 @@ export function PasswordInputStrengthChecker() {
           return (
             <div
               className={cn(
-                "h-1 flex-1 rounded-full",
+                "h-1 flex-1",
                 strengthResult.score > i ? color : "bg-secondary"
               )}
               // biome-ignore lint/suspicious/noArrayIndexKey: no id

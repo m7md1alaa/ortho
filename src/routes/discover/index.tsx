@@ -22,7 +22,7 @@ function PublicListCard({
   list: ApiOutputs["wordLists"]["getPublicLists"][number];
 }) {
   return (
-    <div className="group rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700">
+    <div className="group border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700">
       <div className="mb-4 flex items-start justify-between">
         <div className="flex-1">
           <h3 className="font-semibold text-xl text-zinc-100 transition-colors group-hover:text-white">
@@ -37,7 +37,7 @@ function PublicListCard({
       <div className="mb-4 flex flex-wrap items-center gap-3">
         {list.category && (
           <span
-            className={`rounded-full px-3 py-1 font-medium text-xs ${
+            className={`px-3 py-1 font-medium text-xs ${
               categoryColors[list.category] || categoryColors.General
             }`}
           >
@@ -108,7 +108,7 @@ function DiscoverPage() {
 
     if (publicLists.length === 0) {
       return (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
+        <div className="border border-zinc-800 bg-zinc-900/30 py-16 text-center">
           <BookOpen className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
           <h3 className="mb-2 font-medium text-xl text-zinc-300">
             No public lists yet

@@ -23,7 +23,7 @@ export function ListStats({ words }: ListStatsProps) {
       : 0;
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+    <div className="border border-zinc-800 bg-zinc-900/50 p-6">
       <h2 className="mb-4 font-semibold text-lg">List Stats</h2>
       <div className="space-y-4">
         <div className="flex items-center justify-between">

@@ -37,12 +37,12 @@ function PublicListDetailPage() {
       <div className="min-h-screen bg-black text-zinc-100">
         <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="mb-8 h-8 w-1/3 rounded bg-zinc-800" />
-            <div className="mb-4 h-4 w-1/2 rounded bg-zinc-800" />
+            <div className="mb-8 h-8 w-1/3 bg-zinc-800" />
+            <div className="mb-4 h-4 w-1/2 bg-zinc-800" />
             <div className="space-y-3">
               {[...new Array(5)].map((_, i) => (
                 // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                <div className="h-12 rounded bg-zinc-800" key={i} />
+                <div className="h-12 bg-zinc-800" key={i} />
               ))}
             </div>
           </div>
@@ -87,7 +87,7 @@ function PublicListDetailPage() {
           <div className="mb-4 flex flex-wrap items-center gap-3">
             {list.category && (
               <span
-                className={`rounded-full px-3 py-1 font-medium text-xs ${
+                className={`px-3 py-1 font-medium text-xs ${
                   categoryColors[list.category] || categoryColors.General
                 }`}
               >
@@ -139,7 +139,7 @@ function PublicListDetailPage() {
                 className="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-zinc-800/50"
                 key={word.id}
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-800 font-medium text-sm text-zinc-400">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center bg-zinc-800 font-medium text-sm text-zinc-400">
                   {index + 1}
                 </span>
                 <span className="font-medium text-lg text-zinc-200">

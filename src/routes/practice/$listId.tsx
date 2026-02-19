@@ -208,7 +208,7 @@ function PracticePage() {
                 time
               </p>
               <Link
-                className="rounded bg-zinc-800 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-zinc-700"
+                className="bg-zinc-800 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-zinc-700"
                 to="/auth"
               >
                 Sign In
@@ -249,7 +249,7 @@ function PracticePage() {
               Sign in to save your progress
             </p>
             <Link
-              className="rounded bg-zinc-800 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-zinc-700"
+              className="bg-zinc-800 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-zinc-700"
               to="/auth"
             >
               Sign In

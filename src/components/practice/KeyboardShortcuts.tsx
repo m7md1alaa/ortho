@@ -12,37 +12,33 @@ export function KeyboardShortcuts() {
         </div>
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           <span>
-            <kbd className="rounded bg-zinc-800 px-2 py-1">Enter</kbd> Submit
+            <kbd className="bg-zinc-800 px-2 py-1">Enter</kbd> Submit
           </span>
           <span>
-            <kbd className="rounded bg-zinc-800 px-2 py-1">Tab</kbd> Show Answer
+            <kbd className="bg-zinc-800 px-2 py-1">Tab</kbd> Show Answer
           </span>
           <span>
-            <kbd className="rounded bg-zinc-800 px-2 py-1">Space</kbd> Replay
+            <kbd className="bg-zinc-800 px-2 py-1">Space</kbd> Replay
             <span className="ml-1 text-xs text-zinc-600">
               (when not typing)
             </span>
           </span>
           <span>
-            <kbd className="rounded bg-zinc-800 px-2 py-1">
+            <kbd className="bg-zinc-800 px-2 py-1">
               {isMac ? "⌘" : "Ctrl"}+/
             </kbd>{" "}
             Focus
           </span>
           <span>
-            <kbd className="rounded bg-zinc-800 px-2 py-1">
-              {isMac ? "⌘" : "Alt"}+→
-            </kbd>{" "}
+            <kbd className="bg-zinc-800 px-2 py-1">{isMac ? "⌘" : "Alt"}+→</kbd>{" "}
             Next
           </span>
           <span>
-            <kbd className="rounded bg-zinc-800 px-2 py-1">
-              {isMac ? "⌘" : "Alt"}+←
-            </kbd>{" "}
+            <kbd className="bg-zinc-800 px-2 py-1">{isMac ? "⌘" : "Alt"}+←</kbd>{" "}
             Previous
           </span>
           <span>
-            <kbd className="rounded bg-zinc-800 px-2 py-1">Esc</kbd> Clear
+            <kbd className="bg-zinc-800 px-2 py-1">Esc</kbd> Clear
           </span>
         </div>
         <p className="mt-2 text-xs text-zinc-600">

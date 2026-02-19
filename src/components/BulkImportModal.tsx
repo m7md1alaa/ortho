@@ -111,13 +111,13 @@ export function BulkImportModal({
 
           <div className="py-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-zinc-800/50 p-4 text-center">
+              <div className="bg-zinc-800/50 p-4 text-center">
                 <div className="font-bold text-3xl text-green-400">
                   {result.count}
                 </div>
                 <div className="mt-1 text-sm text-zinc-400">Words Added</div>
               </div>
-              <div className="rounded-lg bg-zinc-800/50 p-4 text-center">
+              <div className="bg-zinc-800/50 p-4 text-center">
                 <div className="font-bold text-3xl text-yellow-400">
                   {duplicateCount}
                 </div>
@@ -183,7 +183,7 @@ export function BulkImportModal({
                 <span className="text-xs text-yellow-400">Limit reached</span>
               )}
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
+            <div className="h-2 overflow-hidden bg-zinc-800">
               <div
                 className={cn(
                   "h-full transition-all duration-300",

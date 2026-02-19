@@ -207,7 +207,7 @@ function Sidebar({
       <ListStats words={list.words} />
 
       <Link
-        className="block w-full rounded-lg bg-zinc-100 px-4 py-3 text-center font-medium text-black transition-colors hover:bg-white"
+        className="block w-full bg-zinc-100 px-4 py-3 text-center font-medium text-black transition-colors hover:bg-white"
         params={{ listId: list.id }}
         to="/practice/$listId"
       >
@@ -215,7 +215,7 @@ function Sidebar({
       </Link>
 
       {isAdding ? (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6">
+        <div className="border border-zinc-800 bg-zinc-900/50 p-6">
           <h3 className="mb-4 font-semibold text-lg">Add New Word</h3>
           <WordForm onCancel={onAddToggle} onSubmit={onWordAdd} />
         </div>
@@ -253,7 +253,7 @@ function WordsList({ words, onWordUpdate, onWordDelete }: WordListProps) {
   if (words.length === 0) {
     return (
       <div className="lg:col-span-2">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
+        <div className="border border-zinc-800 bg-zinc-900/30 py-16 text-center">
           <Brain className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
           <h3 className="mb-2 font-medium text-xl text-zinc-300">
             No words yet
