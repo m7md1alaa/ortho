@@ -9,15 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ListsIndexRouteImport } from './routes/lists/index'
 import { Route as DiscoverIndexRouteImport } from './routes/discover/index'
+import { Route as ProfileSignOutRouteImport } from './routes/profile.sign-out'
 import { Route as PracticeListIdRouteImport } from './routes/practice/$listId'
 import { Route as ListsListIdRouteImport } from './routes/lists/$listId'
 import { Route as DiscoverListIdRouteImport } from './routes/discover/$listId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth.$'
 
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -37,6 +44,11 @@ const DiscoverIndexRoute = DiscoverIndexRouteImport.update({
   id: '/discover/',
   path: '/discover/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileSignOutRoute = ProfileSignOutRouteImport.update({
+  id: '/sign-out',
+  path: '/sign-out',
+  getParentRoute: () => ProfileRoute,
 } as any)
 const PracticeListIdRoute = PracticeListIdRouteImport.update({
   id: '/practice/$listId',
@@ -62,9 +74,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/discover/$listId': typeof DiscoverListIdRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
+  '/profile/sign-out': typeof ProfileSignOutRoute
   '/discover/': typeof DiscoverIndexRoute
   '/lists/': typeof ListsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -72,9 +86,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/discover/$listId': typeof DiscoverListIdRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
+  '/profile/sign-out': typeof ProfileSignOutRoute
   '/discover': typeof DiscoverIndexRoute
   '/lists': typeof ListsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -83,9 +99,11 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/discover/$listId': typeof DiscoverListIdRoute
   '/lists/$listId': typeof ListsListIdRoute
   '/practice/$listId': typeof PracticeListIdRoute
+  '/profile/sign-out': typeof ProfileSignOutRoute
   '/discover/': typeof DiscoverIndexRoute
   '/lists/': typeof ListsIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -95,9 +113,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/profile'
     | '/discover/$listId'
     | '/lists/$listId'
     | '/practice/$listId'
+    | '/profile/sign-out'
     | '/discover/'
     | '/lists/'
     | '/api/auth/$'
@@ -105,9 +125,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/profile'
     | '/discover/$listId'
     | '/lists/$listId'
     | '/practice/$listId'
+    | '/profile/sign-out'
     | '/discover'
     | '/lists'
     | '/api/auth/$'
@@ -115,9 +137,11 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/profile'
     | '/discover/$listId'
     | '/lists/$listId'
     | '/practice/$listId'
+    | '/profile/sign-out'
     | '/discover/'
     | '/lists/'
     | '/api/auth/$'
@@ -126,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ProfileRoute: typeof ProfileRouteWithChildren
   DiscoverListIdRoute: typeof DiscoverListIdRoute
   ListsListIdRoute: typeof ListsListIdRoute
   PracticeListIdRoute: typeof PracticeListIdRoute
@@ -136,6 +161,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -163,6 +195,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/discover/'
       preLoaderRoute: typeof DiscoverIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/profile/sign-out': {
+      id: '/profile/sign-out'
+      path: '/sign-out'
+      fullPath: '/profile/sign-out'
+      preLoaderRoute: typeof ProfileSignOutRouteImport
+      parentRoute: typeof ProfileRoute
     }
     '/practice/$listId': {
       id: '/practice/$listId'
@@ -195,9 +234,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ProfileRouteChildren {
+  ProfileSignOutRoute: typeof ProfileSignOutRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileSignOutRoute: ProfileSignOutRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ProfileRoute: ProfileRouteWithChildren,
   DiscoverListIdRoute: DiscoverListIdRoute,
   ListsListIdRoute: ListsListIdRoute,
   PracticeListIdRoute: PracticeListIdRoute,

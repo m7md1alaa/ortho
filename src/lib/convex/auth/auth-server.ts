@@ -24,8 +24,17 @@ const auth = convexBetterAuthReactStart({
 
 export const {
   handler,
-  getToken,
+  getToken: originalGetToken,
   fetchAuthQuery,
   fetchAuthMutation,
   fetchAuthAction,
 } = auth;
+
+export async function getToken(): Promise<string | null> {
+  try {
+    const token = await originalGetToken();
+    return token ?? null;
+  } catch {
+    return null;
+  }
+}

@@ -1,40 +1,21 @@
-import { useMutation } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "better-convex/react";
-import AuthAvatar from "@/components/auth/auth-avatar";
 import GitHubLink from "@/components/github-link";
-import { useSignOutMutationOptions } from "@/lib/convex/auth/auth-mutations";
-import { Button } from "./ui/button";
+import UserMenu from "@/components/user-menu";
 import { Spinner } from "./ui/spinner";
 
 interface AuthSectionProps {
   isLoading: boolean;
   isAuthenticated: boolean;
-  signOut: ReturnType<typeof useMutation>;
 }
 
-function renderAuthSection({
-  isLoading,
-  isAuthenticated,
-  signOut,
-}: AuthSectionProps) {
+function renderAuthSection({ isLoading, isAuthenticated }: AuthSectionProps) {
   if (isLoading) {
     return <Spinner className="text-zinc-500" />;
   }
 
   if (isAuthenticated) {
-    return (
-      <>
-        <Button
-          className="cursor-pointer font-mono disabled:cursor-not-allowed disabled:opacity-50"
-          loading={signOut.isPending}
-          onClick={() => signOut.mutate(undefined)}
-        >
-          Sign out
-        </Button>
-        <AuthAvatar />
-      </>
-    );
+    return <UserMenu />;
   }
 
   return (
@@ -45,7 +26,6 @@ function renderAuthSection({
 }
 
 export default function Header() {
-  const signOut = useMutation(useSignOutMutationOptions());
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
@@ -82,7 +62,7 @@ export default function Header() {
               Lists
             </Link>
             <GitHubLink />
-            {renderAuthSection({ isLoading, isAuthenticated, signOut })}
+            {renderAuthSection({ isLoading, isAuthenticated })}
           </nav>
         </div>
       </div>

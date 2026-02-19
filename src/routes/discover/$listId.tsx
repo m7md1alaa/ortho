@@ -55,7 +55,7 @@ function PublicListDetailPage() {
     return (
       <div className="min-h-screen bg-black text-zinc-100">
         <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 py-16 text-center">
+          <div className="border border-zinc-800 bg-zinc-900/30 py-16 text-center">
             <BookOpen className="mx-auto mb-4 h-12 w-12 text-zinc-600" />
             <h3 className="mb-2 font-medium text-xl text-zinc-300">
               List not found
@@ -128,7 +128,7 @@ function PublicListDetailPage() {
           </Link>
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50">
+        <div className="border border-zinc-800 bg-zinc-900/50">
           <div className="border-zinc-800 border-b px-6 py-4">
             <h2 className="font-semibold text-lg">Words in this list</h2>
           </div>
