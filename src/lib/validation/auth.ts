@@ -72,11 +72,11 @@ export type OtpVerifyFormData = z.infer<typeof otpVerifySchema>;
  * First name only schema for OTP flow
  */
 export const firstNameSchema = z.object({
-	firstName: z
-		.string()
-		.min(1, "First name is required")
-		.min(2, "First name must be at least 2 characters")
-		.max(50, "First name must be less than 50 characters"),
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .min(2, "First name must be at least 2 characters")
+    .max(50, "First name must be less than 50 characters"),
 });
 
 export type FirstNameFormData = z.infer<typeof firstNameSchema>;

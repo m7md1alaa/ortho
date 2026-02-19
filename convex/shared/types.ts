@@ -1,7 +1,7 @@
 import type {
-	inferApiInputs,
-	inferApiOutputs,
-	WithHttpRouter,
+  inferApiInputs,
+  inferApiOutputs,
+  WithHttpRouter,
 } from "better-convex/server";
 import type { api } from "../functions/_generated/api";
 import type { appRouter } from "../functions/http";

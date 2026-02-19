@@ -26,7 +26,6 @@ export const authClient = createClient<DataModel, typeof schema>({
           data.email?.split("@")[0] ||
           `user-${Date.now()}`;
         return await { ...data, username };
-        
       },
     },
   },

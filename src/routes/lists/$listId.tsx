@@ -98,7 +98,7 @@ function ListDetailPage() {
             <div className="space-y-3 lg:col-span-2">
               {[...new Array(3)].map((_, i) => (
                 // biome-ignore lint/suspicious/noArrayIndexKey: no id
-<Skeleton className="h-24 w-full" key={i} />
+                <Skeleton className="h-24 w-full" key={i} />
               ))}
             </div>
           </div>

@@ -15,18 +15,18 @@ export function WordDisplay({
   onPlayAudio,
 }: WordDisplayProps) {
   return (
-    <div className="text-center mb-8">
+    <div className="mb-8 text-center">
       <Button
+        className="mb-6 rounded-full"
         onClick={onPlayAudio}
         variant="secondary"
-        className="rounded-full mb-6"
       >
-        <Volume2 className="w-5 h-5" />
+        <Volume2 className="h-5 w-5" />
         <span>Listen</span>
         <span className="text-muted-foreground text-sm">(Ctrl + Space)</span>
       </Button>
 
-      {definition && <p className="text-zinc-400 text-lg mb-2">{definition}</p>}
+      {definition && <p className="mb-2 text-lg text-zinc-400">{definition}</p>}
 
       {example && (
         <p className="text-zinc-500 italic">

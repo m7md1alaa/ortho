@@ -23,12 +23,12 @@ export function DeleteWordDialog({ word, onDelete }: DeleteWordDialogProps) {
       <AlertDialogTrigger
         render={
           <Button
-            variant="ghost"
+            className="hover:text-destructive"
             size="icon-xs"
             title="Delete"
-            className="hover:text-destructive"
+            variant="ghost"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         }
       />
@@ -43,8 +43,8 @@ export function DeleteWordDialog({ word, onDelete }: DeleteWordDialogProps) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={onDelete}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            onClick={onDelete}
           >
             Delete
           </AlertDialogAction>
