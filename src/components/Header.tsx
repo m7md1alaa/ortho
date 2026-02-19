@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "better-convex/react";
 import AuthAvatar from "@/components/auth/auth-avatar";
+import GitHubLink from "@/components/github-link";
 import { useSignOutMutationOptions } from "@/lib/convex/auth/auth-mutations";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
@@ -80,6 +81,7 @@ export default function Header() {
             >
               Lists
             </Link>
+            <GitHubLink />
             {renderAuthSection({ isLoading, isAuthenticated, signOut })}
           </nav>
         </div>
