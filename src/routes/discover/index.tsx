@@ -1,8 +1,10 @@
 import type { ApiOutputs } from "@convex/types";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { BookOpen } from "lucide-react";
+import { useState } from "react";
 import { ListCardSkeleton } from "@/components/lists-skeleton";
+import { PracticeSettingsDialog } from "@/components/practice/PracticeSettingsDialog";
 import { Button } from "@/components/ui/button";
 import { categoryColors, difficultyColors } from "@/lib/colors";
 import { useCRPC } from "@/lib/convex/crpc";
@@ -18,8 +20,10 @@ export const Route = createFileRoute("/discover/")({
 
 function PublicListCard({
   list,
+  onPracticeOpen,
 }: {
   list: ApiOutputs["wordLists"]["getPublicLists"][number];
+  onPracticeOpen: () => void;
 }) {
   return (
     <div className="group border border-zinc-800 bg-zinc-900/50 p-6 transition-all hover:border-zinc-700">
@@ -62,23 +66,24 @@ function PublicListCard({
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Link
           className="flex-1"
           params={{ listId: list.id }}
           to="/discover/$listId"
         >
-          <Button className="w-full" variant="outline">
+          <Button className="w-full" size="sm" variant="outline">
             View Words
           </Button>
         </Link>
-        <Link
+        <Button
           className="flex-1"
-          params={{ listId: list.id }}
-          to="/practice/$listId"
+          onClick={onPracticeOpen}
+          size="sm"
+          type="button"
         >
-          <Button className="w-full">Practice</Button>
-        </Link>
+          Practice
+        </Button>
       </div>
     </div>
   );
@@ -86,7 +91,11 @@ function PublicListCard({
 
 function DiscoverPage() {
   const { publicLists: initialData } = Route.useLoaderData();
+  const navigate = useNavigate();
   const crpc = useCRPC();
+
+  const [practiceListId, setPracticeListId] = useState<string | null>(null);
+  const [totalWords, setTotalWords] = useState(0);
 
   const { data: publicLists, isPending } = useQuery<
     ApiOutputs["wordLists"]["getPublicLists"]
@@ -94,6 +103,28 @@ function DiscoverPage() {
     ...crpc.wordLists.getPublicLists.queryOptions({}),
     initialData,
   });
+
+  const handlePracticeOpen = (
+    list: ApiOutputs["wordLists"]["getPublicLists"][number]
+  ) => {
+    setPracticeListId(list.id);
+    setTotalWords(list.wordCount);
+  };
+
+  const handleStartPractice = (settings: {
+    wordCount: number;
+    difficulty: string;
+  }) => {
+    setPracticeListId(null);
+    navigate({
+      to: "/practice/$listId",
+      params: { listId: practiceListId ?? "" },
+      search: {
+        wordCount: settings.wordCount,
+        difficulty: settings.difficulty,
+      },
+    });
+  };
 
   function renderContent() {
     if (isPending || !publicLists) {
@@ -121,11 +152,25 @@ function DiscoverPage() {
     }
 
     return (
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {publicLists.map((list) => (
-          <PublicListCard key={list.id} list={list} />
-        ))}
-      </div>
+      <>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {publicLists.map((list) => (
+            <PublicListCard
+              key={list.id}
+              list={list}
+              onPracticeOpen={() => handlePracticeOpen(list)}
+            />
+          ))}
+        </div>
+        {practiceListId && (
+          <PracticeSettingsDialog
+            isOpen={practiceListId !== null}
+            onClose={() => setPracticeListId(null)}
+            onStartPractice={handleStartPractice}
+            totalWords={totalWords}
+          />
+        )}
+      </>
     );
   }
 

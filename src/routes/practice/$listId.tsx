@@ -38,10 +38,17 @@ export const Route = createFileRoute("/practice/$listId")({
       };
     }
   },
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      wordCount: typeof search.wordCount === "number" ? search.wordCount : undefined,
+      difficulty: typeof search.difficulty === "string" ? search.difficulty : "all",
+    };
+  },
 });
 
 function PracticePage() {
   const { listId } = useParams({ from: "/practice/$listId" });
+  const search = Route.useSearch();
   const loaderData = Route.useLoaderData();
   const crpc = useCRPC();
   const navigate = useNavigate();
@@ -76,25 +83,32 @@ function PracticePage() {
   // Map words to the expected format - public lists have minimal word data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const words: Word[] =
-    list?.words.map(
-      (w: { id: Id<"words">; word: string } | Word): Word =>
-        "correctCount" in w
-          ? (w as Word)
-          : ({
-              id: w.id,
-              word: w.word,
-              correctCount: 0,
-              createdAt: Date.now(),
-              difficulty: "medium" as const,
-              incorrectCount: 0,
-              lastPracticed: undefined,
-              listId: typedListId,
-              practiceCount: 0,
-              streak: 0,
-              updatedAt: Date.now(),
-              userId: undefined as unknown as Id<"user">,
-            } as Word)
-    ) ?? [];
+    list?.words
+      .filter(
+        (w: { id: Id<"words">; word: string } | Word) =>
+          search.difficulty === "all" ||
+          ("difficulty" in w && w.difficulty === search.difficulty)
+      )
+      .slice(0, search.wordCount ?? list.words.length)
+      .map(
+        (w: { id: Id<"words">; word: string } | Word): Word =>
+          "correctCount" in w
+            ? (w as Word)
+            : ({
+                id: w.id,
+                word: w.word,
+                correctCount: 0,
+                createdAt: Date.now(),
+                difficulty: "medium" as const,
+                incorrectCount: 0,
+                lastPracticed: undefined,
+                listId: typedListId,
+                practiceCount: 0,
+                streak: 0,
+                updatedAt: Date.now(),
+                userId: undefined as unknown as Id<"user">,
+              } as Word)
+      ) ?? [];
 
   // Redirect to list page if no words and not already redirected
   useEffect(() => {

@@ -1,6 +1,10 @@
 import type { ApiOutputs } from "@convex/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 import { Brain, Plus, Upload } from "lucide-react";
 import { useState } from "react";
 import { BulkImportModal } from "@/components/BulkImportModal";
@@ -9,6 +13,7 @@ import { ListNotFound } from "@/components/lists/ListNotFound";
 import { ListStats } from "@/components/lists/ListStats";
 import { WordCard } from "@/components/lists/WordCard";
 import { WordForm } from "@/components/lists/WordForm";
+import { PracticeSettingsDialog } from "@/components/practice/PracticeSettingsDialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCRPC } from "@/lib/convex/crpc";
@@ -23,10 +28,27 @@ export const Route = createFileRoute("/lists/$listId")({
 
 function ListDetailPage() {
   const { listId } = useParams({ from: "/lists/$listId" });
+  const navigate = useNavigate();
   const crpc = useCRPC();
   const queryClient = useQueryClient();
   const [isAdding, setIsAdding] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isPracticeSettingsOpen, setIsPracticeSettingsOpen] = useState(false);
+
+  const handleStartPractice = (settings: {
+    wordCount: number;
+    difficulty: string;
+  }) => {
+    setIsPracticeSettingsOpen(false);
+    navigate({
+      to: "/practice/$listId",
+      params: { listId },
+      search: {
+        wordCount: settings.wordCount,
+        difficulty: settings.difficulty,
+      },
+    });
+  };
 
   const typedListId = asId<"wordLists">(listId);
 
@@ -138,6 +160,7 @@ function ListDetailPage() {
             list={list}
             onAddToggle={() => setIsAdding(!isAdding)}
             onImportOpen={() => setIsImportModalOpen(true)}
+            onPracticeOpen={() => setIsPracticeSettingsOpen(true)}
             onWordAdd={(data) => {
               addWordMutation.mutate({
                 listId: typedListId,
@@ -178,6 +201,12 @@ function ListDetailPage() {
           })
         }
       />
+      <PracticeSettingsDialog
+        isOpen={isPracticeSettingsOpen}
+        onClose={() => setIsPracticeSettingsOpen(false)}
+        onStartPractice={handleStartPractice}
+        totalWords={list.words.length}
+      />
     </div>
   );
 }
@@ -187,6 +216,7 @@ interface SidebarProps {
   isAdding: boolean;
   onAddToggle: () => void;
   onImportOpen: () => void;
+  onPracticeOpen: () => void;
   onWordAdd: (data: {
     word: string;
     definition: string;
@@ -200,19 +230,19 @@ function Sidebar({
   isAdding,
   onAddToggle,
   onImportOpen,
+  onPracticeOpen,
   onWordAdd,
 }: SidebarProps) {
   return (
     <div className="space-y-6 lg:col-span-1">
       <ListStats words={list.words} />
 
-      <Link
-        className="block w-full bg-zinc-100 px-4 py-3 text-center font-medium text-black transition-colors hover:bg-white"
-        params={{ listId: list.id }}
-        to="/practice/$listId"
+      <Button
+        className="w-full bg-zinc-100 text-black hover:bg-white"
+        onClick={onPracticeOpen}
       >
         Start Practice Session
-      </Link>
+      </Button>
 
       {isAdding ? (
         <div className="border border-zinc-800 bg-zinc-900/50 p-6">

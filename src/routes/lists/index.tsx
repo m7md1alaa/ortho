@@ -4,9 +4,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Authenticated, useAuth } from "better-convex/react";
 import { ArrowRight, BookOpen, Plus } from "lucide-react";
-import { useEffect, useId } from "react";
+import { useEffect, useId, useState } from "react";
 import { z } from "zod";
 import { ListCardSkeleton } from "@/components/lists-skeleton";
+import { PracticeSettingsDialog } from "@/components/practice/PracticeSettingsDialog";
 import { Button } from "@/components/ui/button";
 import { DeleteDialog } from "@/components/ui/DeleteDialog";
 import { Input } from "@/components/ui/input";
@@ -183,9 +184,11 @@ function ListsPage() {
 function ListCard({
   list,
   onDelete,
+  onPracticeOpen,
 }: {
   list: ApiOutputs["wordLists"]["getUserLists"][number];
   onDelete: () => void;
+  onPracticeOpen: () => void;
 }) {
   const totalWords = list.wordCount;
   return (
@@ -226,14 +229,14 @@ function ListCard({
         >
           Edit Words
         </Link>
-        <Link
+        <Button
           className="flex flex-1 items-center justify-center gap-2 bg-zinc-100 px-4 py-2 text-center font-medium text-black text-sm transition-colors hover:bg-white"
-          params={{ listId: list.id }}
-          to="/practice/$listId"
+          onClick={onPracticeOpen}
+          type="button"
         >
           Practice
           <ArrowRight className="h-4 w-4" />
-        </Link>
+        </Button>
       </div>
     </div>
   );
@@ -246,6 +249,32 @@ function ListContent({
   wordLists: ApiOutputs["wordLists"]["getUserLists"];
   onDelete: ReturnType<typeof useMutation>;
 }) {
+  const navigate = useNavigate();
+  const [practiceListId, setPracticeListId] = useState<string | null>(null);
+  const [totalWords, setTotalWords] = useState(0);
+
+  const handlePracticeOpen = (
+    list: ApiOutputs["wordLists"]["getUserLists"][number]
+  ) => {
+    setPracticeListId(list.id);
+    setTotalWords(list.wordCount);
+  };
+
+  const handleStartPractice = (settings: {
+    wordCount: number;
+    difficulty: string;
+  }) => {
+    setPracticeListId(null);
+    navigate({
+      to: "/practice/$listId",
+      params: { listId: practiceListId ?? "" },
+      search: {
+        wordCount: settings.wordCount,
+        difficulty: settings.difficulty,
+      },
+    });
+  };
+
   if (wordLists.length === 0) {
     return (
       <div className="border border-zinc-800 bg-zinc-900/30 py-16 text-center">
@@ -266,8 +295,17 @@ function ListContent({
             key={list.id}
             list={list}
             onDelete={() => onDelete.mutate({ listId: list.id })}
+            onPracticeOpen={() => handlePracticeOpen(list)}
           />
         )
+      )}
+      {practiceListId && (
+        <PracticeSettingsDialog
+          isOpen={practiceListId !== null}
+          onClose={() => setPracticeListId(null)}
+          onStartPractice={handleStartPractice}
+          totalWords={totalWords}
+        />
       )}
     </div>
   );
