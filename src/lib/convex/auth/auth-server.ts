@@ -30,11 +30,11 @@ export const {
   fetchAuthAction,
 } = auth;
 
-export async function getToken(): Promise<string | null> {
+export async function getToken(): Promise<string | undefined> {
   try {
     const token = await originalGetToken();
-    return token ?? null;
+    return token ?? undefined;
   } catch {
-    return null;
+    return undefined;
   }
 }

@@ -1,5 +1,6 @@
 import { AlertCircle, CheckCircle, Edit2, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DeleteDialog } from "@/components/ui/DeleteDialog";
 import {
   Select,
   SelectContent,
@@ -14,7 +15,6 @@ import {
   getDifficultyColor,
 } from "@/lib/wordStats";
 import type { Word } from "@/types/types";
-import { DeleteWordDialog } from "./DeleteWordDialog";
 
 interface WordCardProps {
   word: Word;
@@ -234,7 +234,12 @@ export function WordCard({ word, index, onUpdate, onDelete }: WordCardProps) {
           >
             <Edit2 className="h-4 w-4" />
           </Button>
-          <DeleteWordDialog onDelete={onDelete} word={word.word} />
+          <DeleteDialog
+            buttonSize="icon-xs"
+            itemName={word.word}
+            onDelete={onDelete}
+            title="Delete Word"
+          />
         </div>
       </div>
     </div>

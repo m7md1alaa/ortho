@@ -7,11 +7,11 @@ import {
   useRouteContext,
 } from "@tanstack/react-router";
 import { useAuth } from "better-convex/react";
-import { BookOpen, LogOutIcon } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { useEffect } from "react";
 import AuthAvatar from "@/components/auth/auth-avatar";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { SignOutDialog } from "@/components/ui/SignOutDialog";
 import { useSignOutMutationOptions } from "@/lib/convex/auth/auth-mutations";
 import { useCRPC } from "@/lib/convex/crpc";
 
@@ -131,15 +131,10 @@ export default function ProfilePage() {
           <div className="lg:col-span-1">
             <Card className="border-zinc-800 bg-zinc-900/50 p-6">
               <h2 className="mb-6 font-semibold text-xl">Actions</h2>
-              <Button
-                className="w-full"
+              <SignOutDialog
                 loading={signOut.isPending}
-                onClick={handleSignOut}
-                variant="destructive"
-              >
-                <LogOutIcon className="mr-2 size-4" />
-                Sign Out
-              </Button>
+                onSignOut={handleSignOut}
+              />
             </Card>
           </div>
         </div>

@@ -3,11 +3,12 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Authenticated, useAuth } from "better-convex/react";
-import { ArrowRight, BookOpen, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, BookOpen, Plus } from "lucide-react";
 import { useEffect, useId } from "react";
 import { z } from "zod";
 import { ListCardSkeleton } from "@/components/lists-skeleton";
 import { Button } from "@/components/ui/button";
+import { DeleteDialog } from "@/components/ui/DeleteDialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -202,15 +203,12 @@ function ListCard({
             <p className="mt-1 text-sm text-zinc-500">{list.description}</p>
           )}
         </div>
-        <Button
-          className="opacity-0 hover:text-destructive group-hover:opacity-100"
-          onClick={onDelete}
-          size="icon-sm"
-          title="Delete list"
-          variant="ghost"
-        >
-          <Trash2 className="h-5 w-5" />
-        </Button>
+        <DeleteDialog
+          buttonSize="icon-sm"
+          itemName={list.name}
+          onDelete={onDelete}
+          title="Delete List"
+        />
       </div>
 
       <div className="mb-4 flex items-center gap-6 text-sm text-zinc-500">

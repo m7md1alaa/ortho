@@ -54,7 +54,7 @@ export default function UserMenu() {
           <Button
             {...props}
             aria-label="User menu"
-            className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-600 focus-visible:ring-offset-2"
+            className="bg-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-600 focus-visible:ring-offset-2"
             type="button"
           >
             <Avatar>
@@ -67,7 +67,7 @@ export default function UserMenu() {
       <DropdownMenuContent>
         <DropdownMenuItem>
           <Link className="flex w-full items-center gap-2" to="/profile">
-            <UserIcon className="size-4" />
+            <UserIcon className="size-4 text-white" />
             Profile
           </Link>
         </DropdownMenuItem>

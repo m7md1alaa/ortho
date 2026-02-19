@@ -12,32 +12,43 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-interface DeleteWordDialogProps {
-  word: string;
+interface DeleteDialogProps {
+  itemName: string;
+  title: string;
   onDelete: () => void;
+  buttonSize?: "icon-xs" | "icon-sm" | "icon-lg";
+  description?: string;
 }
 
-export function DeleteWordDialog({ word, onDelete }: DeleteWordDialogProps) {
+export function DeleteDialog({
+  itemName,
+  title,
+  onDelete,
+  buttonSize = "icon-sm",
+  description,
+}: DeleteDialogProps) {
+  const iconSize = buttonSize === "icon-sm" ? "h-5 w-5" : "h-4 w-4";
+  const defaultDescription = `Are you sure you want to delete "${itemName}"? This action cannot be undone.`;
+
   return (
     <AlertDialog>
       <AlertDialogTrigger
         render={
           <Button
             className="hover:text-destructive"
-            size="icon-xs"
-            title="Delete"
+            size={buttonSize}
+            title={title.toLowerCase()}
             variant="ghost"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className={iconSize} />
           </Button>
         }
       />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Word</AlertDialogTitle>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete "{word}"? This action cannot be
-            undone.
+            {description ?? defaultDescription}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
